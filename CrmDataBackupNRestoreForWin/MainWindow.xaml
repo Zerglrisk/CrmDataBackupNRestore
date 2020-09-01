@@ -4,8 +4,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CrmDataBackupNRestoreForWin"
+        xmlns:extension="clr-namespace:CrmDataBackupNRestoreForWin.Definition.Extension"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Crm Data BackNRestore For Win" 
+        WindowStartupLocation="CenterScreen"
+        Height="{Binding Source={x:Static SystemParameters.PrimaryScreenHeight}, Converter={extension:RatioConverter}, ConverterParameter='0.9'}"
+        Width="{Binding Source={x:Static SystemParameters.PrimaryScreenWidth}, Converter={extension:RatioConverter}, ConverterParameter='0.9' }" >
     <Grid>
         
     </Grid>

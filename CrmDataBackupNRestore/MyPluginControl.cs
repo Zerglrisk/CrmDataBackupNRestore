@@ -11,6 +11,8 @@ using XrmToolBox.Extensibility;
 using Microsoft.Xrm.Sdk.Query;
 using Microsoft.Xrm.Sdk;
 using McTools.Xrm.Connection;
+using Microsoft.Xrm.Sdk.Messages;
+using Microsoft.Xrm.Sdk.Metadata;
 
 namespace CrmDataBackupNRestore
 {
@@ -45,6 +47,16 @@ namespace CrmDataBackupNRestore
             {
                 LogInfo("Settings found and loaded");
             }
+
+            if (mySettings.SelectedTabControl.HasValue)
+            {
+                tabControl1.SelectedIndex = mySettings.SelectedTabControl.Value;
+            }
+            else
+            {
+                mySettings.SelectedTabControl = 0;
+            }
+            
         }
 
         private void tsbClose_Click(object sender, EventArgs e)
@@ -56,19 +68,19 @@ namespace CrmDataBackupNRestore
         {
             // The ExecuteMethod method handles connecting to an
             // organization if XrmToolBox is not yet connected
-            ExecuteMethod(GetAccounts);
+            //ExecuteMethod(GetAccounts);
         }
 
-        private void GetAccounts()
+        private void GetSecurityRole()
         {
             WorkAsync(new WorkAsyncInfo
             {
-                Message = "Getting accounts",
+                Message = "Getting Security Roles",
                 Work = (worker, args) =>
                 {
-                    args.Result = Service.RetrieveMultiple(new QueryExpression("account")
+                    args.Result = Service.RetrieveMultiple(new QueryExpression("role")
                     {
-                        TopCount = 50
+                        
                     });
                 },
                 PostWorkCallBack = (args) =>
@@ -81,6 +93,33 @@ namespace CrmDataBackupNRestore
                     if (result != null)
                     {
                         MessageBox.Show($"Found {result.Entities.Count} accounts");
+                    }
+                }
+            });
+        }
+
+        private void GetEntities()
+        {
+            WorkAsync(new WorkAsyncInfo
+            {
+                Message = "Getting Security Roles",
+                Work = (worker, args) =>
+                {
+                    args.Result = (RetrieveAllEntitiesResponse)Service.Execute(new RetrieveAllEntitiesRequest()
+                    {
+                        EntityFilters = EntityFilters.Entity
+                    });
+                },
+                PostWorkCallBack = (args) =>
+                {
+                    if (args.Error != null)
+                    {
+                        MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    var result = args.Result as RetrieveAllEntitiesResponse;
+                    if (result != null)
+                    {
+                        MessageBox.Show($"Found {result.EntityMetadata.Length} accounts");
                     }
                 }
             });
@@ -125,6 +164,18 @@ namespace CrmDataBackupNRestore
 
             // Call this method to hide the notification
             HideNotification();
+        }
+
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (tabControl1.SelectedTab == tp_general)
+            {
+                ExecuteMethod(GetEntities);
+            }
+            else if (tabControl1.SelectedTab == tp_privileges)
+            {
+                ExecuteMethod(GetSecurityRole);
+            }
         }
     }
 }

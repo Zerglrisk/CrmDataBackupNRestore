@@ -15,5 +15,6 @@ namespace CrmDataBackupNRestore
     public class Settings
     {
         public string LastUsedOrganizationWebappUrl { get; set; }
+        public int? SelectedTabControl { get; set; }
     }
 }
