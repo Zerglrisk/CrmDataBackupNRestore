@@ -40,7 +40,6 @@ namespace CrmDataBackupNRestore
             if (!SettingsManager.Instance.TryLoad(GetType(), out mySettings))
             {
                 mySettings = new Settings();
-
                 LogWarning("Settings not found => a new settings file has been created!");
             }
             else
@@ -56,7 +55,6 @@ namespace CrmDataBackupNRestore
             {
                 mySettings.SelectedTabControl = 0;
             }
-            
         }
 
         private void tsbClose_Click(object sender, EventArgs e)
@@ -92,7 +90,10 @@ namespace CrmDataBackupNRestore
                     var result = args.Result as EntityCollection;
                     if (result != null)
                     {
-                        MessageBox.Show($"Found {result.Entities.Count} accounts");
+                        foreach (var entity in result.Entities)
+                        {
+                            lv_securityRoles.Items.Add(new ListViewItem(new String[] { entity.LogicalName }));
+                        }
                     }
                 }
             });
@@ -102,7 +103,7 @@ namespace CrmDataBackupNRestore
         {
             WorkAsync(new WorkAsyncInfo
             {
-                Message = "Getting Security Roles",
+                Message = "Getting Entities",
                 Work = (worker, args) =>
                 {
                     args.Result = (RetrieveAllEntitiesResponse)Service.Execute(new RetrieveAllEntitiesRequest()
@@ -119,7 +120,10 @@ namespace CrmDataBackupNRestore
                     var result = args.Result as RetrieveAllEntitiesResponse;
                     if (result != null)
                     {
-                        MessageBox.Show($"Found {result.EntityMetadata.Length} accounts");
+                        foreach (var entity in result.EntityMetadata)
+                        {
+                            lv_entities.Items.Add(new ListViewItem(new String[] { entity.LogicalName, entity.DisplayName.UserLocalizedLabel?.Label }));
+                        }
                     }
                 }
             });
@@ -168,6 +172,7 @@ namespace CrmDataBackupNRestore
 
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
+            mySettings.SelectedTabControl = tabControl1.SelectedIndex;
             if (tabControl1.SelectedTab == tp_general)
             {
                 ExecuteMethod(GetEntities);

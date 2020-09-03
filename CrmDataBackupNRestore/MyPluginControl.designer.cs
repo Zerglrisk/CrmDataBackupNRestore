@@ -37,25 +37,25 @@
             this.tp_general = new System.Windows.Forms.TabPage();
             this.label4 = new System.Windows.Forms.Label();
             this.lv_entities = new System.Windows.Forms.ListView();
+            this.logicalName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.displayName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.lv_attributes = new System.Windows.Forms.ListView();
             this.label3 = new System.Windows.Forms.Label();
             this.tp_privileges = new System.Windows.Forms.TabPage();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.label5 = new System.Windows.Forms.Label();
+            this.lv_securityRoles = new System.Windows.Forms.ListView();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label2 = new System.Windows.Forms.Label();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.lv_securityRoles = new System.Windows.Forms.ListView();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.logicalName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.displayName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.toolStripMenu.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tp_general.SuspendLayout();
             this.tp_privileges.SuspendLayout();
-            this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // toolStripMenu
@@ -129,9 +129,9 @@
             // 
             // label4
             // 
-            this.label4.Location = new System.Drawing.Point(187, 0);
+            this.label4.Location = new System.Drawing.Point(217, 13);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(100, 23);
+            this.label4.Size = new System.Drawing.Size(70, 23);
             this.label4.TabIndex = 5;
             this.label4.Text = "애트리뷰트";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -141,21 +141,37 @@
             this.lv_entities.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.logicalName,
             this.displayName});
+            this.lv_entities.FullRowSelect = true;
+            this.lv_entities.GridLines = true;
             this.lv_entities.HideSelection = false;
             this.lv_entities.Location = new System.Drawing.Point(8, 39);
             this.lv_entities.Name = "lv_entities";
-            this.lv_entities.Size = new System.Drawing.Size(175, 109);
+            this.lv_entities.Size = new System.Drawing.Size(205, 307);
             this.lv_entities.TabIndex = 4;
             this.lv_entities.UseCompatibleStateImageBehavior = false;
+            this.lv_entities.View = System.Windows.Forms.View.Details;
+            // 
+            // logicalName
+            // 
+            this.logicalName.Text = "Logical Name";
+            this.logicalName.Width = 100;
+            // 
+            // displayName
+            // 
+            this.displayName.Text = "Display Name";
+            this.displayName.Width = 100;
             // 
             // lv_attributes
             // 
+            this.lv_attributes.FullRowSelect = true;
+            this.lv_attributes.GridLines = true;
             this.lv_attributes.HideSelection = false;
-            this.lv_attributes.Location = new System.Drawing.Point(189, 27);
+            this.lv_attributes.Location = new System.Drawing.Point(219, 39);
             this.lv_attributes.Name = "lv_attributes";
-            this.lv_attributes.Size = new System.Drawing.Size(717, 319);
+            this.lv_attributes.Size = new System.Drawing.Size(687, 307);
             this.lv_attributes.TabIndex = 3;
             this.lv_attributes.UseCompatibleStateImageBehavior = false;
+            this.lv_attributes.View = System.Windows.Forms.View.Details;
             // 
             // label3
             // 
@@ -178,6 +194,36 @@
             this.tp_privileges.TabIndex = 1;
             this.tp_privileges.Text = "Privileges";
             this.tp_privileges.UseVisualStyleBackColor = true;
+            // 
+            // dataGridView1
+            // 
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Location = new System.Drawing.Point(249, 6);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.RowTemplate.Height = 23;
+            this.dataGridView1.Size = new System.Drawing.Size(657, 340);
+            this.dataGridView1.TabIndex = 8;
+            // 
+            // label5
+            // 
+            this.label5.Location = new System.Drawing.Point(4, 6);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(100, 23);
+            this.label5.TabIndex = 7;
+            this.label5.Text = "보안역할";
+            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // lv_securityRoles
+            // 
+            this.lv_securityRoles.FullRowSelect = true;
+            this.lv_securityRoles.GridLines = true;
+            this.lv_securityRoles.HideSelection = false;
+            this.lv_securityRoles.Location = new System.Drawing.Point(6, 33);
+            this.lv_securityRoles.Name = "lv_securityRoles";
+            this.lv_securityRoles.Size = new System.Drawing.Size(217, 199);
+            this.lv_securityRoles.TabIndex = 6;
+            this.lv_securityRoles.UseCompatibleStateImageBehavior = false;
+            this.lv_securityRoles.View = System.Windows.Forms.View.Details;
             // 
             // groupBox1
             // 
@@ -227,41 +273,6 @@
             this.textBox1.Size = new System.Drawing.Size(100, 21);
             this.textBox1.TabIndex = 0;
             // 
-            // label5
-            // 
-            this.label5.Location = new System.Drawing.Point(4, 6);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(100, 23);
-            this.label5.TabIndex = 7;
-            this.label5.Text = "보안역할";
-            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // lv_securityRoles
-            // 
-            this.lv_securityRoles.HideSelection = false;
-            this.lv_securityRoles.Location = new System.Drawing.Point(6, 33);
-            this.lv_securityRoles.Name = "lv_securityRoles";
-            this.lv_securityRoles.Size = new System.Drawing.Size(217, 199);
-            this.lv_securityRoles.TabIndex = 6;
-            this.lv_securityRoles.UseCompatibleStateImageBehavior = false;
-            // 
-            // dataGridView1
-            // 
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(249, 6);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.RowTemplate.Height = 23;
-            this.dataGridView1.Size = new System.Drawing.Size(657, 340);
-            this.dataGridView1.TabIndex = 8;
-            // 
-            // logicalName
-            // 
-            this.logicalName.Width = 100;
-            // 
-            // displayName
-            // 
-            this.displayName.Width = 100;
-            // 
             // MyPluginControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -271,15 +282,16 @@
             this.Controls.Add(this.toolStripMenu);
             this.Name = "MyPluginControl";
             this.Size = new System.Drawing.Size(920, 520);
+            this.OnCloseTool += new System.EventHandler(this.MyPluginControl_OnCloseTool);
             this.Load += new System.EventHandler(this.MyPluginControl_Load);
             this.toolStripMenu.ResumeLayout(false);
             this.toolStripMenu.PerformLayout();
             this.tabControl1.ResumeLayout(false);
             this.tp_general.ResumeLayout(false);
             this.tp_privileges.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
