@@ -37,20 +37,25 @@
             this.tp_general = new System.Windows.Forms.TabPage();
             this.label4 = new System.Windows.Forms.Label();
             this.lv_entities = new System.Windows.Forms.ListView();
-            this.logicalName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.displayName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ch_entity_logicalName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ch_entity_displayName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.lv_attributes = new System.Windows.Forms.ListView();
+            this.ch_attr_logicalName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ch_attr_displayName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ch_attr_type = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.label3 = new System.Windows.Forms.Label();
             this.tp_privileges = new System.Windows.Forms.TabPage();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.label5 = new System.Windows.Forms.Label();
             this.lv_securityRoles = new System.Windows.Forms.ListView();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.cb_C_SaveType = new System.Windows.Forms.ComboBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.chk_C_CryptoUsage = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.toolStripMenu.SuspendLayout();
+            this.txt_C_CryptoKey = new System.Windows.Forms.TextBox();
+            this.ch_entity_guid = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabControl1.SuspendLayout();
             this.tp_general.SuspendLayout();
             this.tp_privileges.SuspendLayout();
@@ -61,11 +66,6 @@
             // toolStripMenu
             // 
             this.toolStripMenu.ImageScalingSize = new System.Drawing.Size(24, 24);
-            this.toolStripMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsbClose,
-            this.tssSeparator1,
-            this.tsbSample,
-            this.tabS});
             this.toolStripMenu.Location = new System.Drawing.Point(0, 0);
             this.toolStripMenu.Name = "toolStripMenu";
             this.toolStripMenu.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
@@ -133,14 +133,15 @@
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(70, 23);
             this.label4.TabIndex = 5;
-            this.label4.Text = "애트리뷰트";
+            this.label4.Text = "Attributes";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lv_entities
             // 
             this.lv_entities.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.logicalName,
-            this.displayName});
+            this.ch_entity_guid,
+            this.ch_entity_logicalName,
+            this.ch_entity_displayName});
             this.lv_entities.FullRowSelect = true;
             this.lv_entities.GridLines = true;
             this.lv_entities.HideSelection = false;
@@ -150,19 +151,24 @@
             this.lv_entities.TabIndex = 4;
             this.lv_entities.UseCompatibleStateImageBehavior = false;
             this.lv_entities.View = System.Windows.Forms.View.Details;
+            this.lv_entities.SelectedIndexChanged += new System.EventHandler(this.lv_entities_SelectedIndexChanged);
             // 
-            // logicalName
+            // ch_entity_logicalName
             // 
-            this.logicalName.Text = "Logical Name";
-            this.logicalName.Width = 100;
+            this.ch_entity_logicalName.Text = "Logical Name";
+            this.ch_entity_logicalName.Width = 100;
             // 
-            // displayName
+            // ch_entity_displayName
             // 
-            this.displayName.Text = "Display Name";
-            this.displayName.Width = 100;
+            this.ch_entity_displayName.Text = "Display Name";
+            this.ch_entity_displayName.Width = 100;
             // 
             // lv_attributes
             // 
+            this.lv_attributes.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.ch_attr_logicalName,
+            this.ch_attr_displayName,
+            this.ch_attr_type});
             this.lv_attributes.FullRowSelect = true;
             this.lv_attributes.GridLines = true;
             this.lv_attributes.HideSelection = false;
@@ -173,13 +179,28 @@
             this.lv_attributes.UseCompatibleStateImageBehavior = false;
             this.lv_attributes.View = System.Windows.Forms.View.Details;
             // 
+            // ch_attr_logicalName
+            // 
+            this.ch_attr_logicalName.Text = "Logical Name";
+            this.ch_attr_logicalName.Width = 100;
+            // 
+            // ch_attr_displayName
+            // 
+            this.ch_attr_displayName.Text = "Display Name";
+            this.ch_attr_displayName.Width = 100;
+            // 
+            // ch_attr_type
+            // 
+            this.ch_attr_type.Text = "Type";
+            this.ch_attr_type.Width = 100;
+            // 
             // label3
             // 
             this.label3.Location = new System.Drawing.Point(6, 13);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(100, 23);
             this.label3.TabIndex = 2;
-            this.label3.Text = "엔티티";
+            this.label3.Text = "Entity";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // tp_privileges
@@ -227,10 +248,12 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.cb_C_SaveType);
+            this.groupBox1.Controls.Add(this.label6);
             this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.checkBox1);
+            this.groupBox1.Controls.Add(this.chk_C_CryptoUsage);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Controls.Add(this.textBox1);
+            this.groupBox1.Controls.Add(this.txt_C_CryptoKey);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox1.Location = new System.Drawing.Point(0, 25);
             this.groupBox1.Name = "groupBox1";
@@ -239,39 +262,65 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "groupBox1";
             // 
+            // cb_C_SaveType
+            // 
+            this.cb_C_SaveType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cb_C_SaveType.FormattingEnabled = true;
+            this.cb_C_SaveType.Items.AddRange(new object[] {
+            "Excel",
+            "Binary"});
+            this.cb_C_SaveType.Location = new System.Drawing.Point(316, 30);
+            this.cb_C_SaveType.Name = "cb_C_SaveType";
+            this.cb_C_SaveType.Size = new System.Drawing.Size(121, 20);
+            this.cb_C_SaveType.TabIndex = 5;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(253, 33);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(57, 12);
+            this.label6.TabIndex = 4;
+            this.label6.Text = "저장 방법";
+            // 
             // label2
             // 
-            this.label2.Location = new System.Drawing.Point(706, 51);
+            this.label2.Location = new System.Drawing.Point(493, 28);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(100, 23);
             this.label2.TabIndex = 3;
             this.label2.Text = "암호화사용";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // checkBox1
+            // chk_C_CryptoUsage
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(812, 55);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(15, 14);
-            this.checkBox1.TabIndex = 2;
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.chk_C_CryptoUsage.AutoSize = true;
+            this.chk_C_CryptoUsage.Location = new System.Drawing.Point(599, 32);
+            this.chk_C_CryptoUsage.Name = "chk_C_CryptoUsage";
+            this.chk_C_CryptoUsage.Size = new System.Drawing.Size(15, 14);
+            this.chk_C_CryptoUsage.TabIndex = 2;
+            this.chk_C_CryptoUsage.UseVisualStyleBackColor = true;
             // 
             // label1
             // 
-            this.label1.Location = new System.Drawing.Point(706, 28);
+            this.label1.Location = new System.Drawing.Point(645, 28);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(100, 23);
             this.label1.TabIndex = 1;
             this.label1.Text = "암호키";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // textBox1
+            // txt_C_CryptoKey
             // 
-            this.textBox1.Location = new System.Drawing.Point(812, 30);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 21);
-            this.textBox1.TabIndex = 0;
+            this.txt_C_CryptoKey.Enabled = false;
+            this.txt_C_CryptoKey.Location = new System.Drawing.Point(751, 30);
+            this.txt_C_CryptoKey.Name = "txt_C_CryptoKey";
+            this.txt_C_CryptoKey.Size = new System.Drawing.Size(100, 21);
+            this.txt_C_CryptoKey.TabIndex = 0;
+            // 
+            // ch_entity_guid
+            // 
+            this.ch_entity_guid.Width = 0;
             // 
             // MyPluginControl
             // 
@@ -284,8 +333,6 @@
             this.Size = new System.Drawing.Size(920, 520);
             this.OnCloseTool += new System.EventHandler(this.MyPluginControl_OnCloseTool);
             this.Load += new System.EventHandler(this.MyPluginControl_Load);
-            this.toolStripMenu.ResumeLayout(false);
-            this.toolStripMenu.PerformLayout();
             this.tabControl1.ResumeLayout(false);
             this.tp_general.ResumeLayout(false);
             this.tp_privileges.ResumeLayout(false);
@@ -307,9 +354,9 @@
         private System.Windows.Forms.TabPage tp_privileges;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox chk_C_CryptoUsage;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox txt_C_CryptoKey;
         private System.Windows.Forms.ToolStripButton tabS;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ListView lv_entities;
@@ -318,7 +365,13 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ListView lv_securityRoles;
         private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.ColumnHeader logicalName;
-        private System.Windows.Forms.ColumnHeader displayName;
+        private System.Windows.Forms.ColumnHeader ch_entity_logicalName;
+        private System.Windows.Forms.ColumnHeader ch_entity_displayName;
+        private System.Windows.Forms.ComboBox cb_C_SaveType;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.ColumnHeader ch_attr_logicalName;
+        private System.Windows.Forms.ColumnHeader ch_attr_displayName;
+        private System.Windows.Forms.ColumnHeader ch_attr_type;
+        private System.Windows.Forms.ColumnHeader ch_entity_guid;
     }
 }

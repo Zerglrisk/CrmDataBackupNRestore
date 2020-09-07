@@ -13,6 +13,7 @@ using Microsoft.Xrm.Sdk;
 using McTools.Xrm.Connection;
 using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
+using AttributeCollection = Microsoft.Xrm.Sdk.AttributeCollection;
 
 namespace CrmDataBackupNRestore
 {
@@ -129,6 +130,37 @@ namespace CrmDataBackupNRestore
             });
         }
 
+        private void GetAtrributes(ListViewItem.ListViewSubItem listViewSubItem)
+        {
+            WorkAsync(new WorkAsyncInfo
+            {
+                Message = "Getting Attributes",
+                Work = (worker, args) =>
+                {
+                    args.Result = (RetrieveAllEntitiesResponse)Service.Execute(new RetrieveAllEntitiesRequest()
+                    {
+                        EntityFilters = EntityFilters.Entity
+                    });
+                    //args.Argument.ToString();
+                },
+                PostWorkCallBack = (args) =>
+                {
+                    if (args.Error != null)
+                    {
+                        MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    var result = args.Result as RetrieveAllEntitiesResponse;
+                    if (result != null)
+                    {
+                        foreach (var entity in result.EntityMetadata)
+                        {
+                            lv_entities.Items.Add(new ListViewItem(new String[] { entity.LogicalName, entity.DisplayName.UserLocalizedLabel?.Label }));
+                        }
+                    }
+                }
+            });
+        }
+
         /// <summary>
         /// This event occurs when the plugin is closed
         /// </summary>
@@ -181,6 +213,17 @@ namespace CrmDataBackupNRestore
             {
                 ExecuteMethod(GetSecurityRole);
             }
+        }
+
+        private void lv_entities_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (lv_entities.SelectedIndices.Count > 0)
+            {
+                //Retrieve attributes
+                ExecuteMethod(GetAtrributes, lv_entities.SelectedItems[0].SubItems[0]);
+                //var attr = GetAtrributes(lv_entities.Items[lv_entities.SelectedIndices[0]][0]);
+            }
+
         }
     }
 }

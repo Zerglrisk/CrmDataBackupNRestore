@@ -10,7 +10,5 @@
         WindowStartupLocation="CenterScreen"
         Height="{Binding Source={x:Static SystemParameters.PrimaryScreenHeight}, Converter={extension:RatioConverter}, ConverterParameter='0.9'}"
         Width="{Binding Source={x:Static SystemParameters.PrimaryScreenWidth}, Converter={extension:RatioConverter}, ConverterParameter='0.9' }" >
-    <Grid>
-        
-    </Grid>
+    <Grid/>
 </Window>
