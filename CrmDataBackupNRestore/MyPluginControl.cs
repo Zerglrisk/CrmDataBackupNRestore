@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -79,7 +80,7 @@ namespace CrmDataBackupNRestore
                 {
                     args.Result = Service.RetrieveMultiple(new QueryExpression("role")
                     {
-                        
+
                     });
                 },
                 PostWorkCallBack = (args) =>
@@ -88,8 +89,8 @@ namespace CrmDataBackupNRestore
                     {
                         MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
-                    var result = args.Result as EntityCollection;
-                    if (result != null)
+
+                    if (args.Result is EntityCollection result)
                     {
                         foreach (var entity in result.Entities)
                         {
@@ -107,6 +108,7 @@ namespace CrmDataBackupNRestore
                 Message = "Getting Entities",
                 Work = (worker, args) =>
                 {
+
                     args.Result = (RetrieveAllEntitiesResponse)Service.Execute(new RetrieveAllEntitiesRequest()
                     {
                         EntityFilters = EntityFilters.Entity
@@ -118,28 +120,31 @@ namespace CrmDataBackupNRestore
                     {
                         MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
-                    var result = args.Result as RetrieveAllEntitiesResponse;
-                    if (result != null)
+
+                    if (args.Result is RetrieveAllEntitiesResponse result)
                     {
                         foreach (var entity in result.EntityMetadata)
                         {
-                            lv_entities.Items.Add(new ListViewItem(new String[] { entity.LogicalName, entity.DisplayName.UserLocalizedLabel?.Label }));
+                            lv_entities.Items.Add(new ListViewItem(new String[] { entity.MetadataId.ToString(), entity.LogicalName, entity.DisplayName.UserLocalizedLabel?.Label }));
                         }
                     }
                 }
             });
         }
 
-        private void GetAtrributes(ListViewItem.ListViewSubItem listViewSubItem)
+        private void GetAtrributes(ListViewItem.ListViewSubItemCollection listViewSubItem)
         {
             WorkAsync(new WorkAsyncInfo
             {
                 Message = "Getting Attributes",
                 Work = (worker, args) =>
                 {
-                    args.Result = (RetrieveAllEntitiesResponse)Service.Execute(new RetrieveAllEntitiesRequest()
+                    args.Result = (RetrieveEntityResponse)Service.Execute(new RetrieveEntityRequest()
                     {
-                        EntityFilters = EntityFilters.Entity
+                        EntityFilters = EntityFilters.Attributes,
+                        LogicalName = listViewSubItem[lv_entities.Columns["ch_entity_logicalName"].Index].Text,
+                        MetadataId = new Guid(listViewSubItem[lv_entities.Columns["ch_entity_guid"].Index].Text)
+
                     });
                     //args.Argument.ToString();
                 },
@@ -149,12 +154,12 @@ namespace CrmDataBackupNRestore
                     {
                         MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
-                    var result = args.Result as RetrieveAllEntitiesResponse;
-                    if (result != null)
+
+                    if (args.Result is RetrieveEntityResponse result)
                     {
-                        foreach (var entity in result.EntityMetadata)
+                        foreach (var attr in result.EntityMetadata.Attributes.Where(x=>x.IsValidForCreate == true))
                         {
-                            lv_entities.Items.Add(new ListViewItem(new String[] { entity.LogicalName, entity.DisplayName.UserLocalizedLabel?.Label }));
+                            lv_attributes.Items.Add(new ListViewItem(new String[] { attr.LogicalName, attr.DisplayName.UserLocalizedLabel?.Label, attr.AttributeTypeName.Value }));
                         }
                     }
                 }
@@ -207,6 +212,21 @@ namespace CrmDataBackupNRestore
             mySettings.SelectedTabControl = tabControl1.SelectedIndex;
             if (tabControl1.SelectedTab == tp_general)
             {
+                #region Init ListView
+                // Width of -2 indicates auto-size.
+
+                //lv_entities
+                lv_entities.Clear();
+                lv_entities.Columns.Add("ch_entity_guid", "Guid", 0, HorizontalAlignment.Left, null);
+                lv_entities.Columns.Add("ch_entity_logicalName", "Logical Name", 110, HorizontalAlignment.Left, null);
+                lv_entities.Columns.Add("ch_entity_displayName", "Display Name", 110, HorizontalAlignment.Left, null);
+
+                //lv_attributes
+                lv_attributes.Clear();
+                lv_attributes.Columns.Add("ch_attr_logicalName", "Logical Name", 110, HorizontalAlignment.Left, null);
+                lv_attributes.Columns.Add("ch_attr_displayName", "Display Name", 200, HorizontalAlignment.Left, null);
+                lv_attributes.Columns.Add("ch_attr_type", "Type", 100, HorizontalAlignment.Left, null);
+                #endregion
                 ExecuteMethod(GetEntities);
             }
             else if (tabControl1.SelectedTab == tp_privileges)
@@ -220,9 +240,22 @@ namespace CrmDataBackupNRestore
             if (lv_entities.SelectedIndices.Count > 0)
             {
                 //Retrieve attributes
-                ExecuteMethod(GetAtrributes, lv_entities.SelectedItems[0].SubItems[0]);
+                ExecuteMethod(GetAtrributes, lv_entities.SelectedItems[0].SubItems);
                 //var attr = GetAtrributes(lv_entities.Items[lv_entities.SelectedIndices[0]][0]);
             }
+
+        }
+
+        private void tsb_Export_Click(object sender, EventArgs e)
+        {
+           //Core.Binary.Save("","a");
+           Core.Binary.SaveAsBinary("", Core.Binary.IV,2);
+            //Encrypter.SaveAsBinary(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "IV"), Encrypter.BlowFish.IV);
+            //Encrypter.BlowFish.IV =  Core.Binary.LoadAsBinary<byte[]>(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "IV"));
+        }
+
+        private void tsb_Import_Click(object sender, EventArgs e)
+        {
 
         }
     }

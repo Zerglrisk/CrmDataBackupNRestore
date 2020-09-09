@@ -29,25 +29,27 @@
         private void InitializeComponent()
         {
             this.toolStripMenu = new System.Windows.Forms.ToolStrip();
+            this.tsb_Close = new System.Windows.Forms.ToolStripButton();
+            this.tsb_Export = new System.Windows.Forms.ToolStripButton();
+            this.tsb_Import = new System.Windows.Forms.ToolStripButton();
             this.tsbClose = new System.Windows.Forms.ToolStripButton();
             this.tssSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.tsbSample = new System.Windows.Forms.ToolStripButton();
             this.tabS = new System.Windows.Forms.ToolStripButton();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tp_general = new System.Windows.Forms.TabPage();
-            this.label4 = new System.Windows.Forms.Label();
-            this.lv_entities = new System.Windows.Forms.ListView();
-            this.ch_entity_logicalName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ch_entity_displayName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.pn_general_attribute = new System.Windows.Forms.Panel();
             this.lv_attributes = new System.Windows.Forms.ListView();
-            this.ch_attr_logicalName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ch_attr_displayName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ch_attr_type = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.label4 = new System.Windows.Forms.Label();
+            this.pn_general_entity = new System.Windows.Forms.Panel();
+            this.lv_entities = new System.Windows.Forms.ListView();
             this.label3 = new System.Windows.Forms.Label();
             this.tp_privileges = new System.Windows.Forms.TabPage();
+            this.pn_priv_privileges_2 = new System.Windows.Forms.Panel();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.label5 = new System.Windows.Forms.Label();
+            this.pn_priv_privileges = new System.Windows.Forms.Panel();
             this.lv_securityRoles = new System.Windows.Forms.ListView();
+            this.label5 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.cb_C_SaveType = new System.Windows.Forms.ComboBox();
             this.label6 = new System.Windows.Forms.Label();
@@ -55,23 +57,57 @@
             this.chk_C_CryptoUsage = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.txt_C_CryptoKey = new System.Windows.Forms.TextBox();
-            this.ch_entity_guid = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.label7 = new System.Windows.Forms.Label();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.toolStripMenu.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tp_general.SuspendLayout();
+            this.pn_general_attribute.SuspendLayout();
+            this.pn_general_entity.SuspendLayout();
             this.tp_privileges.SuspendLayout();
+            this.pn_priv_privileges_2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.pn_priv_privileges.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // toolStripMenu
             // 
             this.toolStripMenu.ImageScalingSize = new System.Drawing.Size(24, 24);
+            this.toolStripMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsb_Close,
+            this.tsb_Export,
+            this.tsb_Import});
             this.toolStripMenu.Location = new System.Drawing.Point(0, 0);
             this.toolStripMenu.Name = "toolStripMenu";
             this.toolStripMenu.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
             this.toolStripMenu.Size = new System.Drawing.Size(920, 25);
             this.toolStripMenu.TabIndex = 4;
             this.toolStripMenu.Text = "toolStrip1";
+            // 
+            // tsb_Close
+            // 
+            this.tsb_Close.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tsb_Close.Name = "tsb_Close";
+            this.tsb_Close.Size = new System.Drawing.Size(40, 22);
+            this.tsb_Close.Text = "Close";
+            this.tsb_Close.Click += new System.EventHandler(this.tsbClose_Click);
+            // 
+            // tsb_Export
+            // 
+            this.tsb_Export.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tsb_Export.Name = "tsb_Export";
+            this.tsb_Export.Size = new System.Drawing.Size(45, 22);
+            this.tsb_Export.Text = "Export";
+            this.tsb_Export.Click += new System.EventHandler(this.tsb_Export_Click);
+            // 
+            // tsb_Import
+            // 
+            this.tsb_Import.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tsb_Import.Name = "tsb_Import";
+            this.tsb_Import.Size = new System.Drawing.Size(47, 22);
+            this.tsb_Import.Text = "Import";
+            this.tsb_Import.Click += new System.EventHandler(this.tsb_Import_Click);
             // 
             // tsbClose
             // 
@@ -115,10 +151,8 @@
             // 
             // tp_general
             // 
-            this.tp_general.Controls.Add(this.label4);
-            this.tp_general.Controls.Add(this.lv_entities);
-            this.tp_general.Controls.Add(this.lv_attributes);
-            this.tp_general.Controls.Add(this.label3);
+            this.tp_general.Controls.Add(this.pn_general_attribute);
+            this.tp_general.Controls.Add(this.pn_general_entity);
             this.tp_general.Location = new System.Drawing.Point(4, 22);
             this.tp_general.Name = "tp_general";
             this.tp_general.Padding = new System.Windows.Forms.Padding(3);
@@ -127,87 +161,79 @@
             this.tp_general.Text = "General";
             this.tp_general.UseVisualStyleBackColor = true;
             // 
+            // pn_general_attribute
+            // 
+            this.pn_general_attribute.Controls.Add(this.lv_attributes);
+            this.pn_general_attribute.Controls.Add(this.label4);
+            this.pn_general_attribute.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pn_general_attribute.Location = new System.Drawing.Point(253, 3);
+            this.pn_general_attribute.Name = "pn_general_attribute";
+            this.pn_general_attribute.Padding = new System.Windows.Forms.Padding(10);
+            this.pn_general_attribute.Size = new System.Drawing.Size(656, 363);
+            this.pn_general_attribute.TabIndex = 6;
+            // 
+            // lv_attributes
+            // 
+            this.lv_attributes.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lv_attributes.FullRowSelect = true;
+            this.lv_attributes.GridLines = true;
+            this.lv_attributes.HideSelection = false;
+            this.lv_attributes.Location = new System.Drawing.Point(10, 33);
+            this.lv_attributes.Name = "lv_attributes";
+            this.lv_attributes.Size = new System.Drawing.Size(636, 320);
+            this.lv_attributes.TabIndex = 3;
+            this.lv_attributes.UseCompatibleStateImageBehavior = false;
+            this.lv_attributes.View = System.Windows.Forms.View.Details;
+            // 
             // label4
             // 
-            this.label4.Location = new System.Drawing.Point(217, 13);
+            this.label4.Dock = System.Windows.Forms.DockStyle.Top;
+            this.label4.Location = new System.Drawing.Point(10, 10);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(70, 23);
+            this.label4.Size = new System.Drawing.Size(636, 23);
             this.label4.TabIndex = 5;
             this.label4.Text = "Attributes";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // pn_general_entity
+            // 
+            this.pn_general_entity.Controls.Add(this.lv_entities);
+            this.pn_general_entity.Controls.Add(this.label3);
+            this.pn_general_entity.Dock = System.Windows.Forms.DockStyle.Left;
+            this.pn_general_entity.Location = new System.Drawing.Point(3, 3);
+            this.pn_general_entity.Name = "pn_general_entity";
+            this.pn_general_entity.Padding = new System.Windows.Forms.Padding(10);
+            this.pn_general_entity.Size = new System.Drawing.Size(250, 363);
+            this.pn_general_entity.TabIndex = 8;
+            // 
             // lv_entities
             // 
-            this.lv_entities.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.ch_entity_guid,
-            this.ch_entity_logicalName,
-            this.ch_entity_displayName});
+            this.lv_entities.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lv_entities.FullRowSelect = true;
             this.lv_entities.GridLines = true;
             this.lv_entities.HideSelection = false;
-            this.lv_entities.Location = new System.Drawing.Point(8, 39);
+            this.lv_entities.Location = new System.Drawing.Point(10, 33);
             this.lv_entities.Name = "lv_entities";
-            this.lv_entities.Size = new System.Drawing.Size(205, 307);
+            this.lv_entities.Size = new System.Drawing.Size(230, 320);
             this.lv_entities.TabIndex = 4;
             this.lv_entities.UseCompatibleStateImageBehavior = false;
             this.lv_entities.View = System.Windows.Forms.View.Details;
             this.lv_entities.SelectedIndexChanged += new System.EventHandler(this.lv_entities_SelectedIndexChanged);
             // 
-            // ch_entity_logicalName
-            // 
-            this.ch_entity_logicalName.Text = "Logical Name";
-            this.ch_entity_logicalName.Width = 100;
-            // 
-            // ch_entity_displayName
-            // 
-            this.ch_entity_displayName.Text = "Display Name";
-            this.ch_entity_displayName.Width = 100;
-            // 
-            // lv_attributes
-            // 
-            this.lv_attributes.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.ch_attr_logicalName,
-            this.ch_attr_displayName,
-            this.ch_attr_type});
-            this.lv_attributes.FullRowSelect = true;
-            this.lv_attributes.GridLines = true;
-            this.lv_attributes.HideSelection = false;
-            this.lv_attributes.Location = new System.Drawing.Point(219, 39);
-            this.lv_attributes.Name = "lv_attributes";
-            this.lv_attributes.Size = new System.Drawing.Size(687, 307);
-            this.lv_attributes.TabIndex = 3;
-            this.lv_attributes.UseCompatibleStateImageBehavior = false;
-            this.lv_attributes.View = System.Windows.Forms.View.Details;
-            // 
-            // ch_attr_logicalName
-            // 
-            this.ch_attr_logicalName.Text = "Logical Name";
-            this.ch_attr_logicalName.Width = 100;
-            // 
-            // ch_attr_displayName
-            // 
-            this.ch_attr_displayName.Text = "Display Name";
-            this.ch_attr_displayName.Width = 100;
-            // 
-            // ch_attr_type
-            // 
-            this.ch_attr_type.Text = "Type";
-            this.ch_attr_type.Width = 100;
-            // 
             // label3
             // 
-            this.label3.Location = new System.Drawing.Point(6, 13);
+            this.label3.Dock = System.Windows.Forms.DockStyle.Top;
+            this.label3.Location = new System.Drawing.Point(10, 10);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(100, 23);
+            this.label3.Size = new System.Drawing.Size(230, 23);
             this.label3.TabIndex = 2;
             this.label3.Text = "Entity";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // tp_privileges
             // 
-            this.tp_privileges.Controls.Add(this.dataGridView1);
-            this.tp_privileges.Controls.Add(this.label5);
-            this.tp_privileges.Controls.Add(this.lv_securityRoles);
+            this.tp_privileges.Controls.Add(this.pn_priv_privileges_2);
+            this.tp_privileges.Controls.Add(this.pn_priv_privileges);
             this.tp_privileges.Location = new System.Drawing.Point(4, 22);
             this.tp_privileges.Name = "tp_privileges";
             this.tp_privileges.Padding = new System.Windows.Forms.Padding(3);
@@ -216,38 +242,64 @@
             this.tp_privileges.Text = "Privileges";
             this.tp_privileges.UseVisualStyleBackColor = true;
             // 
+            // pn_priv_privileges_2
+            // 
+            this.pn_priv_privileges_2.Controls.Add(this.dataGridView1);
+            this.pn_priv_privileges_2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pn_priv_privileges_2.Location = new System.Drawing.Point(253, 3);
+            this.pn_priv_privileges_2.Name = "pn_priv_privileges_2";
+            this.pn_priv_privileges_2.Padding = new System.Windows.Forms.Padding(10);
+            this.pn_priv_privileges_2.Size = new System.Drawing.Size(656, 363);
+            this.pn_priv_privileges_2.TabIndex = 10;
+            // 
             // dataGridView1
             // 
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(249, 6);
+            this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridView1.Location = new System.Drawing.Point(10, 10);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 23;
-            this.dataGridView1.Size = new System.Drawing.Size(657, 340);
+            this.dataGridView1.Size = new System.Drawing.Size(636, 343);
             this.dataGridView1.TabIndex = 8;
             // 
-            // label5
+            // pn_priv_privileges
             // 
-            this.label5.Location = new System.Drawing.Point(4, 6);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(100, 23);
-            this.label5.TabIndex = 7;
-            this.label5.Text = "보안역할";
-            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.pn_priv_privileges.Controls.Add(this.lv_securityRoles);
+            this.pn_priv_privileges.Controls.Add(this.label5);
+            this.pn_priv_privileges.Dock = System.Windows.Forms.DockStyle.Left;
+            this.pn_priv_privileges.Location = new System.Drawing.Point(3, 3);
+            this.pn_priv_privileges.Name = "pn_priv_privileges";
+            this.pn_priv_privileges.Padding = new System.Windows.Forms.Padding(10);
+            this.pn_priv_privileges.Size = new System.Drawing.Size(250, 363);
+            this.pn_priv_privileges.TabIndex = 9;
             // 
             // lv_securityRoles
             // 
+            this.lv_securityRoles.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lv_securityRoles.FullRowSelect = true;
             this.lv_securityRoles.GridLines = true;
             this.lv_securityRoles.HideSelection = false;
-            this.lv_securityRoles.Location = new System.Drawing.Point(6, 33);
+            this.lv_securityRoles.Location = new System.Drawing.Point(10, 33);
             this.lv_securityRoles.Name = "lv_securityRoles";
-            this.lv_securityRoles.Size = new System.Drawing.Size(217, 199);
+            this.lv_securityRoles.Size = new System.Drawing.Size(230, 320);
             this.lv_securityRoles.TabIndex = 6;
             this.lv_securityRoles.UseCompatibleStateImageBehavior = false;
             this.lv_securityRoles.View = System.Windows.Forms.View.Details;
             // 
+            // label5
+            // 
+            this.label5.Dock = System.Windows.Forms.DockStyle.Top;
+            this.label5.Location = new System.Drawing.Point(10, 10);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(230, 23);
+            this.label5.TabIndex = 7;
+            this.label5.Text = "보안역할";
+            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.label7);
+            this.groupBox1.Controls.Add(this.checkBox1);
             this.groupBox1.Controls.Add(this.cb_C_SaveType);
             this.groupBox1.Controls.Add(this.label6);
             this.groupBox1.Controls.Add(this.label2);
@@ -318,9 +370,23 @@
             this.txt_C_CryptoKey.Size = new System.Drawing.Size(100, 21);
             this.txt_C_CryptoKey.TabIndex = 0;
             // 
-            // ch_entity_guid
+            // label7
             // 
-            this.ch_entity_guid.Width = 0;
+            this.label7.Location = new System.Drawing.Point(253, 53);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(100, 23);
+            this.label7.TabIndex = 7;
+            this.label7.Text = "Preview 사용";
+            this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(359, 57);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(15, 14);
+            this.checkBox1.TabIndex = 6;
+            this.checkBox1.UseVisualStyleBackColor = true;
             // 
             // MyPluginControl
             // 
@@ -333,10 +399,16 @@
             this.Size = new System.Drawing.Size(920, 520);
             this.OnCloseTool += new System.EventHandler(this.MyPluginControl_OnCloseTool);
             this.Load += new System.EventHandler(this.MyPluginControl_Load);
+            this.toolStripMenu.ResumeLayout(false);
+            this.toolStripMenu.PerformLayout();
             this.tabControl1.ResumeLayout(false);
             this.tp_general.ResumeLayout(false);
+            this.pn_general_attribute.ResumeLayout(false);
+            this.pn_general_entity.ResumeLayout(false);
             this.tp_privileges.ResumeLayout(false);
+            this.pn_priv_privileges_2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.pn_priv_privileges.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
@@ -365,13 +437,16 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ListView lv_securityRoles;
         private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.ColumnHeader ch_entity_logicalName;
-        private System.Windows.Forms.ColumnHeader ch_entity_displayName;
         private System.Windows.Forms.ComboBox cb_C_SaveType;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.ColumnHeader ch_attr_logicalName;
-        private System.Windows.Forms.ColumnHeader ch_attr_displayName;
-        private System.Windows.Forms.ColumnHeader ch_attr_type;
-        private System.Windows.Forms.ColumnHeader ch_entity_guid;
+        private System.Windows.Forms.ToolStripButton tsb_Close;
+        private System.Windows.Forms.Panel pn_general_attribute;
+        private System.Windows.Forms.Panel pn_general_entity;
+        private System.Windows.Forms.Panel pn_priv_privileges_2;
+        private System.Windows.Forms.Panel pn_priv_privileges;
+        private System.Windows.Forms.ToolStripButton tsb_Export;
+        private System.Windows.Forms.ToolStripButton tsb_Import;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.CheckBox checkBox1;
     }
 }
