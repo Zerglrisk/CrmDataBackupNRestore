@@ -8,10 +8,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Core;
+using Core.Definition;
 using XrmToolBox.Extensibility;
 using Microsoft.Xrm.Sdk.Query;
 using Microsoft.Xrm.Sdk;
 using McTools.Xrm.Connection;
+using Microsoft.Crm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
 using AttributeCollection = Microsoft.Xrm.Sdk.AttributeCollection;
@@ -28,6 +31,8 @@ namespace CrmDataBackupNRestore
     public partial class MyPluginControl : PluginControlBase
     {
         private Settings mySettings;
+        private string selectedEntityLogicalName;
+        private bool isIVLoaded;
 
         public MyPluginControl()
         {
@@ -52,11 +57,16 @@ namespace CrmDataBackupNRestore
             if (mySettings.SelectedTabControl.HasValue)
             {
                 tabControl1.SelectedIndex = mySettings.SelectedTabControl.Value;
+                tabControl1_SelectedIndexChanged(null, null);
             }
             else
             {
                 mySettings.SelectedTabControl = 0;
+                tabControl1_SelectedIndexChanged(null, null);
             }
+
+            txt_C_IV.Text = Binary.ByteToHex(Binary.GenerateIV);
+            isIVLoaded = false;
         }
 
         private void tsbClose_Click(object sender, EventArgs e)
@@ -227,6 +237,12 @@ namespace CrmDataBackupNRestore
                 lv_attributes.Columns.Add("ch_attr_displayName", "Display Name", 200, HorizontalAlignment.Left, null);
                 lv_attributes.Columns.Add("ch_attr_type", "Type", 100, HorizontalAlignment.Left, null);
                 #endregion
+
+                #region init
+
+                selectedEntityLogicalName = string.Empty;
+
+                #endregion
                 ExecuteMethod(GetEntities);
             }
             else if (tabControl1.SelectedTab == tp_privileges)
@@ -240,6 +256,8 @@ namespace CrmDataBackupNRestore
             if (lv_entities.SelectedIndices.Count > 0)
             {
                 //Retrieve attributes
+                selectedEntityLogicalName = lv_entities.SelectedItems[0].SubItems[lv_entities.Columns["ch_entity_logicalName"].Index].Text;
+                lv_attributes.Items.Clear();
                 ExecuteMethod(GetAtrributes, lv_entities.SelectedItems[0].SubItems);
                 //var attr = GetAtrributes(lv_entities.Items[lv_entities.SelectedIndices[0]][0]);
             }
@@ -249,14 +267,100 @@ namespace CrmDataBackupNRestore
         private void tsb_Export_Click(object sender, EventArgs e)
         {
            //Core.Binary.Save("","a");
-           Core.Binary.SaveAsBinary("", Core.Binary.IV,2);
             //Encrypter.SaveAsBinary(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "IV"), Encrypter.BlowFish.IV);
             //Encrypter.BlowFish.IV =  Core.Binary.LoadAsBinary<byte[]>(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "IV"));
+
+            //get attributes
+            var selectedAttributes = (from ListViewItem item in lv_attributes.Items select item.SubItems[lv_attributes.Columns["ch_attr_logicalName"].Index].Text);
+
+            var records = GetEntityRecords(selectedEntityLogicalName, selectedAttributes);
+
+            var folderPath = GetFolderPath();
+            Core.Binary.SaveAsBinary(Path.Combine(folderPath, $"{selectedEntityLogicalName}_{DateTime.Now:yyyy-MM-dd_HHmmss}"), records, 2);
+            //IF LOADED DONT SAVE IV -- need create code
+            Core.Binary.SaveAsBinary(Path.Combine(folderPath,$"IV_{HardwareInfoGetter.GetUUID()}"),Binary.IV);
         }
 
         private void tsb_Import_Click(object sender, EventArgs e)
         {
+            //Preview 필요
+            var fileName = GetFilePath();
+            var records = Core.Binary.LoadAsBinary<IEnumerable<EntityWrapper>>(fileName, 2);
 
+            foreach (var entity in records)
+            {
+                var aa = entity.GenerateEntity();
+            }
+        }
+
+        private IEnumerable<EntityWrapper> GetEntityRecords(string entityLogicalName, IEnumerable<string> selectedAttributes)
+        {
+            var qe = new QueryExpression(entityLogicalName)
+            {
+                ColumnSet = new ColumnSet(selectedAttributes.ToArray()),
+                PageInfo = new PagingInfo()
+                {
+                    Count = 5000,
+                    PageNumber = 1
+                }
+            };
+            var ec = Service.RetrieveMultiple(qe);
+
+            var entities = new List<EntityWrapper>(ec.Entities.Select(a => new EntityWrapper() { Id = a.Id, Attributes = a.Attributes.ToDictionary(x => x.Key, x => x.Value), LogicalName = a.LogicalName }));
+
+            while (ec.MoreRecords)
+            {
+                qe.PageInfo.PageNumber += 1;
+                qe.PageInfo.PagingCookie = ec.PagingCookie;
+                ec = Service.RetrieveMultiple(qe);
+
+                entities.AddRange(ec.Entities.Select(a => new EntityWrapper() { Id = a.Id, Attributes = a.Attributes.ToDictionary(x => x.Key, x => x.Value), LogicalName = a.LogicalName }));
+            }
+            return entities;
+        }
+
+        private string GetFolderPath()
+        {
+            using (var fbd = new FolderBrowserDialog())
+            {
+                DialogResult result = fbd.ShowDialog();
+
+                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                {
+                    string[] files = Directory.GetFiles(fbd.SelectedPath);
+                    //not empty is ok
+
+                    return fbd.SelectedPath;
+                }
+                else
+                {
+                    return string.Empty;
+                }
+            }
+        }
+
+        private string GetFilePath()
+        {
+            using (var ofd = new OpenFileDialog())
+            {
+                DialogResult result = ofd.ShowDialog();
+
+                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(ofd.FileName))
+                {
+                    return ofd.FileName;
+                }
+                else
+                {
+                    return string.Empty;
+                }
+            }
+        }
+
+        private void btn_LoadIV_Click(object sender, EventArgs e)
+        {
+            Binary.IV = Binary.LoadAsBinary<byte[]>(GetFilePath());
+
+            this.txt_C_IV.Text = Binary.ByteToHex(Binary.IV);
         }
     }
 }

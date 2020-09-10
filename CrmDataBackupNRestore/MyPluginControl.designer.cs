@@ -51,14 +51,15 @@
             this.lv_securityRoles = new System.Windows.Forms.ListView();
             this.label5 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.btn_LoadIV = new System.Windows.Forms.Button();
+            this.label7 = new System.Windows.Forms.Label();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.cb_C_SaveType = new System.Windows.Forms.ComboBox();
             this.label6 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.chk_C_CryptoUsage = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.txt_C_CryptoKey = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.txt_C_IV = new System.Windows.Forms.TextBox();
             this.toolStripMenu.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tp_general.SuspendLayout();
@@ -298,6 +299,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.btn_LoadIV);
             this.groupBox1.Controls.Add(this.label7);
             this.groupBox1.Controls.Add(this.checkBox1);
             this.groupBox1.Controls.Add(this.cb_C_SaveType);
@@ -305,7 +307,7 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.chk_C_CryptoUsage);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Controls.Add(this.txt_C_CryptoKey);
+            this.groupBox1.Controls.Add(this.txt_C_IV);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox1.Location = new System.Drawing.Point(0, 25);
             this.groupBox1.Name = "groupBox1";
@@ -313,6 +315,34 @@
             this.groupBox1.TabIndex = 6;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "groupBox1";
+            // 
+            // btn_LoadIV
+            // 
+            this.btn_LoadIV.Location = new System.Drawing.Point(855, 29);
+            this.btn_LoadIV.Name = "btn_LoadIV";
+            this.btn_LoadIV.Size = new System.Drawing.Size(50, 23);
+            this.btn_LoadIV.TabIndex = 8;
+            this.btn_LoadIV.Text = "Load";
+            this.btn_LoadIV.UseVisualStyleBackColor = true;
+            this.btn_LoadIV.Click += new System.EventHandler(this.btn_LoadIV_Click);
+            // 
+            // label7
+            // 
+            this.label7.Location = new System.Drawing.Point(253, 53);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(100, 23);
+            this.label7.TabIndex = 7;
+            this.label7.Text = "Preview 사용";
+            this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(359, 57);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(15, 14);
+            this.checkBox1.TabIndex = 6;
+            this.checkBox1.UseVisualStyleBackColor = true;
             // 
             // cb_C_SaveType
             // 
@@ -359,34 +389,17 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(100, 23);
             this.label1.TabIndex = 1;
-            this.label1.Text = "암호키";
+            this.label1.Text = "IV";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // txt_C_CryptoKey
+            // txt_C_IV
             // 
-            this.txt_C_CryptoKey.Enabled = false;
-            this.txt_C_CryptoKey.Location = new System.Drawing.Point(751, 30);
-            this.txt_C_CryptoKey.Name = "txt_C_CryptoKey";
-            this.txt_C_CryptoKey.Size = new System.Drawing.Size(100, 21);
-            this.txt_C_CryptoKey.TabIndex = 0;
-            // 
-            // label7
-            // 
-            this.label7.Location = new System.Drawing.Point(253, 53);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(100, 23);
-            this.label7.TabIndex = 7;
-            this.label7.Text = "Preview 사용";
-            this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // checkBox1
-            // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(359, 57);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(15, 14);
-            this.checkBox1.TabIndex = 6;
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.txt_C_IV.Enabled = false;
+            this.txt_C_IV.Location = new System.Drawing.Point(751, 30);
+            this.txt_C_IV.MaxLength = 16;
+            this.txt_C_IV.Name = "txt_C_IV";
+            this.txt_C_IV.Size = new System.Drawing.Size(100, 21);
+            this.txt_C_IV.TabIndex = 0;
             // 
             // MyPluginControl
             // 
@@ -428,7 +441,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.CheckBox chk_C_CryptoUsage;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox txt_C_CryptoKey;
+        private System.Windows.Forms.TextBox txt_C_IV;
         private System.Windows.Forms.ToolStripButton tabS;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ListView lv_entities;
@@ -448,5 +461,6 @@
         private System.Windows.Forms.ToolStripButton tsb_Import;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.Button btn_LoadIV;
     }
 }
