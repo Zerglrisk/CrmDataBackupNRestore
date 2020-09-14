@@ -51,6 +51,7 @@
             this.lv_securityRoles = new System.Windows.Forms.ListView();
             this.label5 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.txt_C_IV = new System.Windows.Forms.TextBox();
             this.btn_LoadIV = new System.Windows.Forms.Button();
             this.label7 = new System.Windows.Forms.Label();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
@@ -59,7 +60,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.chk_C_CryptoUsage = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.txt_C_IV = new System.Windows.Forms.TextBox();
             this.toolStripMenu.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tp_general.SuspendLayout();
@@ -175,6 +175,7 @@
             // 
             // lv_attributes
             // 
+            this.lv_attributes.CheckBoxes = true;
             this.lv_attributes.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lv_attributes.FullRowSelect = true;
             this.lv_attributes.GridLines = true;
@@ -185,6 +186,7 @@
             this.lv_attributes.TabIndex = 3;
             this.lv_attributes.UseCompatibleStateImageBehavior = false;
             this.lv_attributes.View = System.Windows.Forms.View.Details;
+            this.lv_attributes.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.lv_attributes_ItemChecked);
             // 
             // label4
             // 
@@ -209,6 +211,7 @@
             // 
             // lv_entities
             // 
+            this.lv_entities.CheckBoxes = true;
             this.lv_entities.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lv_entities.FullRowSelect = true;
             this.lv_entities.GridLines = true;
@@ -219,6 +222,7 @@
             this.lv_entities.TabIndex = 4;
             this.lv_entities.UseCompatibleStateImageBehavior = false;
             this.lv_entities.View = System.Windows.Forms.View.Details;
+            this.lv_entities.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.lv_entities_ItemChecked);
             this.lv_entities.SelectedIndexChanged += new System.EventHandler(this.lv_entities_SelectedIndexChanged);
             // 
             // label3
@@ -299,6 +303,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.txt_C_IV);
             this.groupBox1.Controls.Add(this.btn_LoadIV);
             this.groupBox1.Controls.Add(this.label7);
             this.groupBox1.Controls.Add(this.checkBox1);
@@ -307,7 +312,6 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.chk_C_CryptoUsage);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Controls.Add(this.txt_C_IV);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox1.Location = new System.Drawing.Point(0, 25);
             this.groupBox1.Name = "groupBox1";
@@ -315,6 +319,15 @@
             this.groupBox1.TabIndex = 6;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "groupBox1";
+            // 
+            // txt_C_IV
+            // 
+            this.txt_C_IV.Enabled = false;
+            this.txt_C_IV.Location = new System.Drawing.Point(671, 30);
+            this.txt_C_IV.MaxLength = 16;
+            this.txt_C_IV.Name = "txt_C_IV";
+            this.txt_C_IV.Size = new System.Drawing.Size(180, 21);
+            this.txt_C_IV.TabIndex = 0;
             // 
             // btn_LoadIV
             // 
@@ -391,15 +404,6 @@
             this.label1.TabIndex = 1;
             this.label1.Text = "IV";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // txt_C_IV
-            // 
-            this.txt_C_IV.Enabled = false;
-            this.txt_C_IV.Location = new System.Drawing.Point(751, 30);
-            this.txt_C_IV.MaxLength = 16;
-            this.txt_C_IV.Name = "txt_C_IV";
-            this.txt_C_IV.Size = new System.Drawing.Size(100, 21);
-            this.txt_C_IV.TabIndex = 0;
             // 
             // MyPluginControl
             // 
