@@ -37,6 +37,9 @@ namespace CrmDataBackupNRestore
 
         private Dictionary<string,string> checkedEntities;
         private Dictionary<string, List<string>> checkedAttributes;
+
+        //로드시 checked 이벤트 회피용
+        private bool isAttributeLoad;
         public MyPluginControl()
         {
             InitializeComponent();
@@ -72,6 +75,7 @@ namespace CrmDataBackupNRestore
             checkedAttributes = new Dictionary<string, List<string>>(); 
             txt_C_IV.Text = Binary.ByteToHex(Binary.GenerateIV);
             isIVLoaded = false;
+            isAttributeLoad = false;
         }
 
         private void tsbClose_Click(object sender, EventArgs e)
@@ -171,6 +175,8 @@ namespace CrmDataBackupNRestore
 
                     if (args.Result is RetrieveEntityResponse result)
                     {
+                        isAttributeLoad = true;
+                        
                         foreach (var attr in result.EntityMetadata.Attributes.Where(x=>x.IsValidForCreate == true))
                         {
                             lv_attributes.Items.Add(new ListViewItem(new String[] { attr.LogicalName, attr.DisplayName.UserLocalizedLabel?.Label, attr.AttributeTypeName.Value }));
@@ -186,6 +192,8 @@ namespace CrmDataBackupNRestore
                                 item.Checked = true;
                             }
                         }
+
+                        isAttributeLoad = false;
                     }
                 }
             });
@@ -286,6 +294,7 @@ namespace CrmDataBackupNRestore
             //Encrypter.BlowFish.IV =  Core.Binary.LoadAsBinary<byte[]>(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "IV"));
 
             var folderPath = GetFolderPath();
+            if (string.IsNullOrWhiteSpace(folderPath)) return;
             foreach (var entity in checkedEntities)
             {
                 //get attributes
@@ -327,6 +336,7 @@ namespace CrmDataBackupNRestore
         {
             //Preview 필요
             var fileName = GetFilePath();
+            if (string.IsNullOrWhiteSpace(fileName)) return;
             var records = Core.Binary.LoadAsBinary<IEnumerable<EntityWrapper>>(fileName, 2);
 
             foreach (var entity in records)
@@ -335,8 +345,9 @@ namespace CrmDataBackupNRestore
             }
         }
 
-        private IEnumerable<EntityWrapper> GetEntityRecords(string entityLogicalName , IEnumerable<string> selectedAttributes)
+        private IEnumerable<EntityWrapper> GetEntityRecords(string entityLogicalName, IEnumerable<string> selectedAttributes)
         {
+            //Need Fix : Attributes (overridencreatedon -> createdon)
             var qe = new QueryExpression(entityLogicalName)
             {
                 ColumnSet = new ColumnSet(selectedAttributes.ToArray()),
@@ -433,44 +444,52 @@ namespace CrmDataBackupNRestore
             }
             else
             {
-                checkedEntities.Remove(key);
-                checkedAttributes.Remove(key);
+                if (checkedEntities.ContainsKey(key))
+                {
+                    checkedEntities.Remove(key);
+                    checkedAttributes.Remove(key);
+                }
             }
         }
 
         private void lv_attributes_ItemChecked(object sender, ItemCheckedEventArgs e)
         {
-            if (e.Item.Checked && lv_entities.SelectedIndices.Count > 0)
+            if (isAttributeLoad == false)
             {
-                var key = lv_entities.SelectedItems[0].SubItems[lv_entities.Columns["ch_entity_guid"].Index].Text;
-                if (!checkedAttributes.ContainsKey(key)) 
+                if (e.Item.Checked && lv_entities.SelectedIndices.Count > 0)
                 {
-                    checkedAttributes.Add(key,null);
-                }
+                    var key = lv_entities.SelectedItems[0].SubItems[lv_entities.Columns["ch_entity_guid"].Index].Text;
+                    if (!checkedAttributes.ContainsKey(key))
+                    {
+                        checkedAttributes.Add(key, null);
+                    }
 
-                if (checkedAttributes[key] == null)
+                    if (checkedAttributes[key] == null)
+                    {
+                        checkedAttributes[key] = new List<string>();
+                    }
+
+                    checkedAttributes[key]
+                        .Add(e.Item.SubItems[lv_attributes.Columns["ch_attr_logicalName"].Index].Text);
+                }
+                else if (!e.Item.Checked && lv_entities.SelectedIndices.Count > 0)
                 {
-                    checkedAttributes[key] = new List<string>();
-                }
+                    var key = lv_entities.SelectedItems[0].SubItems[lv_entities.Columns["ch_entity_guid"].Index].Text;
 
-                checkedAttributes[key].Add(e.Item.SubItems[lv_attributes.Columns["ch_attr_logicalName"].Index].Text);
-            }
-            else if (!e.Item.Checked && lv_entities.SelectedIndices.Count > 0)
-            {
-                var key = lv_entities.SelectedItems[0].SubItems[lv_entities.Columns["ch_entity_guid"].Index].Text;
-                if (!checkedAttributes.ContainsKey(key))
-                {
-                    checkedAttributes.Add(key, null);
-                }
+                    if (!checkedAttributes.ContainsKey(key))
+                    {
+                        checkedAttributes.Add(key, null);
+                    }
 
-                if (checkedAttributes[key] == null)
-                {
-                    checkedAttributes[key] = new List<string>();
-                }
+                    if (checkedAttributes[key] == null)
+                    {
+                        checkedAttributes[key] = new List<string>();
+                    }
 
-                var logicalName = e.Item.SubItems[lv_attributes.Columns["ch_attr_logicalName"].Index].Text;
-                if (checkedAttributes[key].Contains(logicalName))
-                    checkedAttributes[key].Remove(logicalName);
+                    var logicalName = e.Item.SubItems[lv_attributes.Columns["ch_attr_logicalName"].Index].Text;
+                    if (checkedAttributes[key].Contains(logicalName))
+                        checkedAttributes[key].Remove(logicalName);
+                }
             }
         }
     }

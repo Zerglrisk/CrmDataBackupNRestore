@@ -109,6 +109,7 @@
     <Compile Include="Definition\BlowFish.cs" />
     <Compile Include="Definition\HardwareInfoGetter.cs" />
     <Compile Include="Definition\Serialize\EntityWrapper.cs" />
+    <Compile Include="Definition\Serialize\OptionSetValueCollectionWrapper.cs" />
     <Compile Include="Definition\Serialize\OptionSetValueWrapper.cs" />
     <Compile Include="Excel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

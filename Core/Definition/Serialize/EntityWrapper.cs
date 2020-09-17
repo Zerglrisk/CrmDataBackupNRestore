@@ -30,6 +30,12 @@ namespace Core.Definition
             {
                 Attributes[key] =  new OptionSetValueWrapper(Attributes[key] as OptionSetValue);
             }
+
+            keys = Attributes.Where(x => x.Value is OptionSetValueCollection).Select(x => x.Key).ToArray();
+            foreach (var key in keys)
+            {
+                Attributes[key] = new OptionSetValueCollectionWrapper(Attributes[key] as OptionSetValueCollection);
+            }
         }
 
         private void AttributeDeserialize()
