@@ -177,7 +177,10 @@ namespace CrmDataBackupNRestore
                     {
                         isAttributeLoad = true;
                         
-                        foreach (var attr in result.EntityMetadata.Attributes.Where(x=>x.IsValidForCreate == true))
+                        foreach (var attr in result.EntityMetadata.Attributes.Where(
+                            x=>(x.IsValidForCreate != null && x.IsValidForCreate.Value) 
+                               && ( x.DisplayName.UserLocalizedLabel != null && !string.IsNullOrWhiteSpace(x.DisplayName.UserLocalizedLabel.Label))
+                               && ( x.IsValidForRead != null && x.IsValidForRead.Value)))
                         {
                             lv_attributes.Items.Add(new ListViewItem(new String[] { attr.LogicalName, attr.DisplayName.UserLocalizedLabel?.Label, attr.AttributeTypeName.Value }));
                         }
@@ -339,10 +342,9 @@ namespace CrmDataBackupNRestore
             if (string.IsNullOrWhiteSpace(fileName)) return;
             var records = Core.Binary.LoadAsBinary<IEnumerable<EntityWrapper>>(fileName, 2);
 
-            foreach (var entity in records)
-            {
-                var aa = entity.GenerateEntity();
-            }
+            var ec = records.Deserialize();
+
+            //MessageBox.Show(ec.Entities.Count.ToString());
         }
 
         private IEnumerable<EntityWrapper> GetEntityRecords(string entityLogicalName, IEnumerable<string> selectedAttributes)

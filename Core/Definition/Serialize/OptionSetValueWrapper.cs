@@ -56,4 +56,12 @@ namespace Core.Definition.Serialize
             return this._value.GetHashCode();
         }
     }
+
+    public static class OptionSetValueWrapperExtender
+    {
+        public static OptionSetValue ToOptionSetValue(this OptionSetValueWrapper wrapper)
+        {
+            return new OptionSetValue(wrapper.Value);
+        }
+    }
 }

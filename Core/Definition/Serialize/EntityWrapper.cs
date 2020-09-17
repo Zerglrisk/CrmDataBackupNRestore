@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using Core.Definition.Serialize;
+using DocumentFormat.OpenXml.Drawing.Diagrams;
 using Microsoft.Xrm.Sdk;
 
 namespace Core.Definition
@@ -38,18 +39,39 @@ namespace Core.Definition
             }
         }
 
-        private void AttributeDeserialize()
+        private AttributeCollection AttributeDeserialize()
         {
+            var ac = new AttributeCollection();
+            foreach (var attr in this.Attributes)
+            {
+                if (attr.Value is OptionSetValueWrapper)
+                {
+                    var osv = ((OptionSetValueWrapper) attr.Value).ToOptionSetValue();
+                    ac.Add(attr.Key,osv);
+                }
+                else if (attr.Value is OptionSetValueCollectionWrapper)
+                {
+                    var osvc = ((OptionSetValueCollectionWrapper)attr.Value).ToOptionSetValueCollection();
+                    ac.Add(attr.Key, osvc);
+                }
+                else
+                {
+                    ac.Add(attr.Key, attr.Value);
+                }
+            }
 
+            return ac;
         }
 
         public Entity GenerateEntity()
         {
-            var entity = new Entity(LogicalName);
-            if (Id != Guid.Empty)
+            var entity = new Entity(this.LogicalName);
+            if (this.Id != Guid.Empty)
             {
-                entity.Id = Id;
+                entity.Id = this.Id;
             }
+
+            entity.Attributes = this.AttributeDeserialize();
 
             return entity;
         }
@@ -58,5 +80,16 @@ namespace Core.Definition
         //{
         //    return Attributes.ToDictionary(x => x.Key, x => x.Value);
         //}
+    }
+
+    public static class EntityWrapperExtender
+    {
+        public static EntityCollection Deserialize(this IEnumerable<EntityWrapper> entityWrappers)
+        {
+            var enumerable = entityWrappers.ToList();
+            var entities = enumerable.Select(entity => entity.GenerateEntity()).ToList();
+
+            return new EntityCollection(entities){EntityName = enumerable.FirstOrDefault()?.LogicalName};
+        }
     }
 }

@@ -58,4 +58,14 @@ namespace Core.Definition.Serialize
             return this._value.GetHashCode();
         }
     }
+
+    public static class OptionSetValueCollectionWrapperExtender
+    {
+        public static OptionSetValueCollection ToOptionSetValueCollection(this OptionSetValueCollectionWrapper wrapper)
+        {
+            var osvc = wrapper.Value.Select(osv => osv.ToOptionSetValue()).ToList();
+            return new OptionSetValueCollection(osvc);
+        }
+    }
+
 }
