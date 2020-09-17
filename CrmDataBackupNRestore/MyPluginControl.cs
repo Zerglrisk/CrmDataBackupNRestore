@@ -312,14 +312,14 @@ namespace CrmDataBackupNRestore
 
                     //Core.Binary.SaveAsBinary(Path.Combine(folderPath, $"{selectedEntityLogicalName}_{DateTime.Now:yyyy-MM-dd_HHmmss}"), records, 2);
                     Core.Binary.SaveAsBinary(
-                        Path.Combine(folderPath, $"{entity.Value}_{DateTime.Now:yyyy-MM-dd_HHmmss}"), records, 2);
+                        Path.Combine(folderPath, $"{entity.Value}_{DateTime.Now:yyyy-MM-dd_HHmmss}.cdbr"), records, 2);
                 }
             }
 
             //IF LOADED DONT SAVE IV -- need create code
             if (!File.Exists(Path.Combine(folderPath, $"IV_{HardwareInfoGetter.GetUUID()}")))
             {
-                Core.Binary.SaveAsBinary(Path.Combine(folderPath, $"IV_{HardwareInfoGetter.GetUUID()}"), Binary.IV);
+                Core.Binary.SaveAsBinary(Path.Combine(folderPath, $"IV_{HardwareInfoGetter.GetUUID()}.iv"), Binary.IV);
             }
             else
             {
@@ -329,7 +329,7 @@ namespace CrmDataBackupNRestore
                     if (MessageBox.Show("Do you want overwrite new IV ?", "", MessageBoxButtons.YesNo,
                             MessageBoxIcon.Warning) == DialogResult.Yes)
                     {
-                        Core.Binary.SaveAsBinary(Path.Combine(folderPath, $"IV_{HardwareInfoGetter.GetUUID()}"), Binary.IV);
+                        Core.Binary.SaveAsBinary(Path.Combine(folderPath, $"IV_{HardwareInfoGetter.GetUUID()}.iv"), Binary.IV);
                     }
                 }
             }
@@ -338,7 +338,9 @@ namespace CrmDataBackupNRestore
         private void tsb_Import_Click(object sender, EventArgs e)
         {
             //Preview 필요
-            var fileName = GetFilePath();
+            //Need Fix : 레코드가 5000개 이상일 경우 어떻게 읽을 것인가를 해결방안 찾기
+            //파일 확장자 정하기
+            var fileName = GetFilePath("cdbr");
             if (string.IsNullOrWhiteSpace(fileName)) return;
             var records = Core.Binary.LoadAsBinary<IEnumerable<EntityWrapper>>(fileName, 2);
 
@@ -394,10 +396,16 @@ namespace CrmDataBackupNRestore
             }
         }
 
-        private string GetFilePath()
+        private string GetFilePath(string extension = "")
         {
             using (var ofd = new OpenFileDialog())
             {
+                if (!string.IsNullOrWhiteSpace(extension))
+                {
+                    ofd.DefaultExt = extension;
+                    ofd.Filter =  $"{extension} file(*.{extension})|*.{extension}";
+                }
+
                 DialogResult result = ofd.ShowDialog();
 
                 if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(ofd.FileName))
@@ -413,8 +421,9 @@ namespace CrmDataBackupNRestore
 
         private void btn_LoadIV_Click(object sender, EventArgs e)
         {
-            Binary.IV = Binary.LoadAsBinary<byte[]>(GetFilePath());
-
+            var filePath = GetFilePath("iv");
+            if (string.IsNullOrWhiteSpace(filePath)) return;
+            Binary.IV = Binary.LoadAsBinary<byte[]>(filePath);
             this.txt_C_IV.Text = Binary.ByteToHex(Binary.IV);
         }
 
