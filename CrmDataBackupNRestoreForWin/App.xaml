@@ -4,6 +4,21 @@
              xmlns:local="clr-namespace:CrmDataBackupNRestoreForWin"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <!-- If you want apply Only One checkbox, set annotation and use next line -->
+        <!-- 
+             <CheckBox FlowDirection="RightToLeft">
+                <TextBlock FlowDirection="LeftToRight" Text="CheckBox Content:" />
+             </CheckBox>
+        -->
+        <Style TargetType="CheckBox">
+            <Setter Property="FlowDirection" Value="RightToLeft" />
+            <Setter Property="ContentTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <ContentControl FlowDirection="LeftToRight" Content="{Binding}" />
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Application.Resources>
 </Application>

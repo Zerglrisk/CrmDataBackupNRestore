@@ -37,6 +37,14 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.DirectoryServices.AccountManagement" />
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -99,6 +107,10 @@
     <ProjectReference Include="..\Core\Core.csproj">
       <Project>{b27b161e-3329-461a-9a02-aa008ee92d1c}</Project>
       <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WPF.Dialogs\WPF.Dialogs.csproj">
+      <Project>{5f00f49b-76b0-41f7-b3f9-c64ccedce9a3}</Project>
+      <Name>WPF.Dialogs</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

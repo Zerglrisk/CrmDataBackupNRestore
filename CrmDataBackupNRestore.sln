@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrmDataBackupNRestoreForWin", "CrmDataBackupNRestoreForWin\CrmDataBackupNRestoreForWin.csproj", "{A3763155-CBBF-4E20-AC9C-288E86BFDF22}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPF.Dialogs", "WPF.Dialogs\WPF.Dialogs.csproj", "{5F00F49B-76B0-41F7-B3F9-C64CCEDCE9A3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{A3763155-CBBF-4E20-AC9C-288E86BFDF22}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A3763155-CBBF-4E20-AC9C-288E86BFDF22}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A3763155-CBBF-4E20-AC9C-288E86BFDF22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F00F49B-76B0-41F7-B3F9-C64CCEDCE9A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F00F49B-76B0-41F7-B3F9-C64CCEDCE9A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F00F49B-76B0-41F7-B3F9-C64CCEDCE9A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F00F49B-76B0-41F7-B3F9-C64CCEDCE9A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
