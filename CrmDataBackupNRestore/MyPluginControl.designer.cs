@@ -217,6 +217,7 @@
             this.lv_entities.GridLines = true;
             this.lv_entities.HideSelection = false;
             this.lv_entities.Location = new System.Drawing.Point(10, 33);
+            this.lv_entities.MultiSelect = false;
             this.lv_entities.Name = "lv_entities";
             this.lv_entities.Size = new System.Drawing.Size(230, 320);
             this.lv_entities.TabIndex = 4;

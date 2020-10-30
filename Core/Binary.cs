@@ -73,6 +73,7 @@ namespace Core
                     {
                         bytes = BlowFish.Decrypt_CBC(bytes);
                     }
+
                     ret = Deserialize<TObject>(bytes);
                     binaryReader.Close();
                 }
@@ -89,7 +90,11 @@ namespace Core
                 //https://stackoverflow.com/a/8613300
                 throw;
             }
-
+            catch (System.Runtime.Serialization.SerializationException)
+            {
+                //
+                throw;
+            }
             catch (Exception)
             {
                 throw;

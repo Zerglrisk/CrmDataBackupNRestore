@@ -42,17 +42,23 @@ namespace Core.Definition
         private AttributeCollection AttributeDeserialize()
         {
             var ac = new AttributeCollection();
+
+            // Need Fix : Attributes (createdon -> overridencreatedon) If OnCreate
+            if (this.Attributes.ContainsKey("createdon"))
+            {
+                //if OnCreate
+                this.Attributes.RenameKey("createdon", "overridencreatedon");
+            }
+
             foreach (var attr in this.Attributes)
             {
-                if (attr.Value is OptionSetValueWrapper)
+                if (attr.Value is OptionSetValueWrapper wrapper)
                 {
-                    var osv = ((OptionSetValueWrapper) attr.Value).ToOptionSetValue();
-                    ac.Add(attr.Key,osv);
+                    ac.Add(attr.Key, wrapper.ToOptionSetValue());
                 }
-                else if (attr.Value is OptionSetValueCollectionWrapper)
+                else if (attr.Value is OptionSetValueCollectionWrapper collectionWrapper)
                 {
-                    var osvc = ((OptionSetValueCollectionWrapper)attr.Value).ToOptionSetValueCollection();
-                    ac.Add(attr.Key, osvc);
+                    ac.Add(attr.Key, collectionWrapper.ToOptionSetValueCollection());
                 }
                 else
                 {

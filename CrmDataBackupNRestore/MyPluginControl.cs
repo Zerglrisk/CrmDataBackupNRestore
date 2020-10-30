@@ -40,7 +40,9 @@ namespace CrmDataBackupNRestore
         private Dictionary<string, string> checkedEntities;
         private Dictionary<string, List<string>> checkedAttributes;
 
-        //로드시 checked 이벤트 회피용
+        /// <summary>
+        /// 로드시 checked 이벤트 회피용
+        /// </summary>
         private bool isAttributeLoad;
 
         #endregion
@@ -99,41 +101,8 @@ namespace CrmDataBackupNRestore
 
             var folderPath = GetFolderPath();
             if (string.IsNullOrWhiteSpace(folderPath)) return;
-            foreach (var entity in checkedEntities)
-            {
-                //get attributes
-                if (checkedAttributes[entity.Key] != null)
-                {
-                    //var selectedAttributes = (from ListViewItem item in lv_attributes.Items select item.SubItems[lv_attributes.Columns["ch_attr_logicalName"].Index].Text);
-                    var selectedAttributes = checkedAttributes[entity.Key];
 
-                    if (!selectedAttributes.Any()) continue;
-                    //var records = GetEntityRecords(selectedEntityLogicalName, selectedAttributes);
-                    var records = GetEntityRecords(entity.Value, selectedAttributes);
-
-                    //Core.Binary.SaveAsBinary(Path.Combine(folderPath, $"{selectedEntityLogicalName}_{DateTime.Now:yyyy-MM-dd_HHmmss}"), records, 2);
-                    Core.Binary.SaveAsBinary(
-                        Path.Combine(folderPath, $"{entity.Value}_{DateTime.Now:yyyy-MM-dd_HHmmss}.cdbr"), records, 2);
-                }
-            }
-
-            //IF LOADED DONT SAVE IV -- need create code
-            if (!File.Exists(Path.Combine(folderPath, $"IV_{HardwareInfoGetter.GetUUID()}")))
-            {
-                Core.Binary.SaveAsBinary(Path.Combine(folderPath, $"IV_{HardwareInfoGetter.GetUUID()}.iv"), Binary.IV);
-            }
-            else
-            {
-                var IV = Binary.LoadAsBinary<byte[]>(Path.Combine(folderPath, $"IV_{HardwareInfoGetter.GetUUID()}"));
-                if (!Binary.IV.Equals(IV))
-                {
-                    if (MessageBox.Show("Do you want overwrite new IV ?", "", MessageBoxButtons.YesNo,
-                            MessageBoxIcon.Warning) == DialogResult.Yes)
-                    {
-                        Core.Binary.SaveAsBinary(Path.Combine(folderPath, $"IV_{HardwareInfoGetter.GetUUID()}.iv"), Binary.IV);
-                    }
-                }
-            }
+            ExecuteMethod(ExportData, folderPath);
         }
 
         private void tsb_Import_Click(object sender, EventArgs e)
@@ -143,11 +112,8 @@ namespace CrmDataBackupNRestore
             //파일 확장자 정하기
             var fileName = GetFilePath("cdbr");
             if (string.IsNullOrWhiteSpace(fileName)) return;
-            var records = Core.Binary.LoadAsBinary<IEnumerable<EntityWrapper>>(fileName, 2);
-
-            var ec = records.Deserialize();
-
-            //MessageBox.Show(ec.Entities.Count.ToString());
+          
+            ExecuteMethod(ImportData, fileName);
         }
 
         #endregion
@@ -271,6 +237,7 @@ namespace CrmDataBackupNRestore
             {
                 if (!e.Item.Selected)
                 {
+                    //If Not selected, set not select other item, select current item
                     foreach (ListViewItem item in lv_entities.SelectedItems)
                     {
                         item.Selected = false;
@@ -280,12 +247,8 @@ namespace CrmDataBackupNRestore
 
                 if (!checkedEntities.ContainsKey(key))
                 {
+                    //if not exist into dictionary, add item.
                     checkedEntities.Add(key, value);
-                    if (checkedAttributes.ContainsKey(key))
-                    {
-                        checkedAttributes.Remove(key);
-                    }
-                    checkedAttributes.Add(key, null);
                 }
             }
             else
@@ -293,49 +256,53 @@ namespace CrmDataBackupNRestore
                 if (checkedEntities.ContainsKey(key))
                 {
                     checkedEntities.Remove(key);
-                    checkedAttributes.Remove(key);
+                    if (checkedAttributes.ContainsKey(key))
+                    {
+                        checkedAttributes.Remove(key);
+                    }
                 }
             }
         }
 
         private void lv_attributes_ItemChecked(object sender, ItemCheckedEventArgs e)
         {
-            if (isAttributeLoad == false)
+            if (isAttributeLoad != false) return;
+
+            if (e.Item.Checked && lv_entities.SelectedIndices.Count > 0)
             {
-                if (e.Item.Checked && lv_entities.SelectedIndices.Count > 0)
+                //Need Fix : When Check Attribute only, Check Entity Too
+                var key = lv_entities.SelectedItems[0].SubItems[lv_entities.Columns["ch_entity_guid"].Index].Text;
+                if (!checkedAttributes.ContainsKey(key))
                 {
-                    var key = lv_entities.SelectedItems[0].SubItems[lv_entities.Columns["ch_entity_guid"].Index].Text;
-                    if (!checkedAttributes.ContainsKey(key))
-                    {
-                        checkedAttributes.Add(key, null);
-                    }
-
-                    if (checkedAttributes[key] == null)
-                    {
-                        checkedAttributes[key] = new List<string>();
-                    }
-
-                    checkedAttributes[key]
-                        .Add(e.Item.SubItems[lv_attributes.Columns["ch_attr_logicalName"].Index].Text);
+                    //If Not Created  Item in Dict
+                    lv_entities.SelectedItems[0].Checked = true;
+                    checkedAttributes.Add(key, null);
                 }
-                else if (!e.Item.Checked && lv_entities.SelectedIndices.Count > 0)
+
+                if (checkedAttributes[key] == null)
                 {
-                    var key = lv_entities.SelectedItems[0].SubItems[lv_entities.Columns["ch_entity_guid"].Index].Text;
-
-                    if (!checkedAttributes.ContainsKey(key))
-                    {
-                        checkedAttributes.Add(key, null);
-                    }
-
-                    if (checkedAttributes[key] == null)
-                    {
-                        checkedAttributes[key] = new List<string>();
-                    }
-
-                    var logicalName = e.Item.SubItems[lv_attributes.Columns["ch_attr_logicalName"].Index].Text;
-                    if (checkedAttributes[key].Contains(logicalName))
-                        checkedAttributes[key].Remove(logicalName);
+                    checkedAttributes[key] = new List<string>();
                 }
+
+                checkedAttributes[key].Add(e.Item.SubItems[lv_attributes.Columns["ch_attr_logicalName"].Index].Text);
+            }
+            else if (!e.Item.Checked && lv_entities.SelectedIndices.Count > 0)
+            {
+                var key = lv_entities.SelectedItems[0].SubItems[lv_entities.Columns["ch_entity_guid"].Index].Text;
+
+                if (!checkedAttributes.ContainsKey(key))
+                {
+                    checkedAttributes.Add(key, null);
+                }
+
+                if (checkedAttributes[key] == null)
+                {
+                    checkedAttributes[key] = new List<string>();
+                }
+
+                var logicalName = e.Item.SubItems[lv_attributes.Columns["ch_attr_logicalName"].Index].Text;
+                if (checkedAttributes[key].Contains(logicalName))
+                    checkedAttributes[key].Remove(logicalName);
             }
         }
 
@@ -346,6 +313,109 @@ namespace CrmDataBackupNRestore
         #endregion
 
         #region Private Excute Method
+
+        private void ImportData(string fileName)
+        {
+            WorkAsync(new WorkAsyncInfo
+            {
+                Message = "Importing",
+                Work = (worker, args) =>
+                {
+                    var cnt = 0;
+
+                    var records = Core.Binary.LoadAsBinary<IEnumerable<EntityWrapper>>(fileName, 2).ToArray();
+
+                    //worker.ReportProgress(cnt, $"[{entity.Value}] Retrieving Records");
+                    //try
+                    //{
+
+                    var ec = records.Deserialize();
+                    //}
+                    //catch (System.Runtime.Serialization.SerializationException)
+                    //{
+                    //    //Decript Failed
+                    //    throw new Exception("Please Load Correct IV First");
+                    //}
+                        
+                    args.Result = "";
+                },
+                PostWorkCallBack = (args) =>
+                {
+                    if (args.Error != null)
+                    {
+                        MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                },
+                ProgressChanged = args => {
+                    // it will display "I have found the user id" in this example
+                    SetWorkingMessage($"[{args.ProgressPercentage}/{checkedEntities.Count}] {args.UserState}");
+                },
+            });
+        }
+        private void ExportData(string folderPath)
+        {
+            WorkAsync(new WorkAsyncInfo
+            {
+                Message = "Exporting",
+                Work = (worker, args) =>
+                {
+                    var cnt = 0;
+                    foreach (var entity in checkedEntities)
+                    {
+                        //get attributes
+                        if (checkedAttributes[entity.Key] != null)
+                        {
+                            ++cnt;
+                            //var selectedAttributes = (from ListViewItem item in lv_attributes.Items select item.SubItems[lv_attributes.Columns["ch_attr_logicalName"].Index].Text);
+                            var selectedAttributes = checkedAttributes[entity.Key];
+
+                            if (!selectedAttributes.Any()) continue;
+                            
+                            worker.ReportProgress(cnt, $"[{entity.Value}] Retrieving Records");
+
+                            //var records = GetEntityRecords(selectedEntityLogicalName, selectedAttributes);
+                            var records = GetEntityRecords(entity.Value, selectedAttributes);
+
+                            worker.ReportProgress(cnt, $"[{entity.Value}] Total {records.Count()} Records Saving");
+                            //Core.Binary.SaveAsBinary(Path.Combine(folderPath, $"{selectedEntityLogicalName}_{DateTime.Now:yyyy-MM-dd_HHmmss}"), records, 2);
+                            Core.Binary.SaveAsBinary(
+                                Path.Combine(folderPath, $"{entity.Value}_{DateTime.Now:yyyy-MM-dd_HHmmss}.cdbr"), records, 2);
+                        }
+                    }
+
+                    args.Result = "";
+                },
+                PostWorkCallBack = (args) =>
+                {
+                    if (args.Error != null)
+                    {
+                        MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+
+                    //IF LOADED DONT SAVE IV -- need create code
+                    if (!File.Exists(Path.Combine(folderPath, $"IV_{HardwareInfoGetter.GetUUID()}")))
+                    {
+                        Core.Binary.SaveAsBinary(Path.Combine(folderPath, $"IV_{HardwareInfoGetter.GetUUID()}.iv"), Binary.IV);
+                    }
+                    else
+                    {
+                        var IV = Binary.LoadAsBinary<byte[]>(Path.Combine(folderPath, $"IV_{HardwareInfoGetter.GetUUID()}"));
+                        if (!Binary.IV.Equals(IV))
+                        {
+                            if (MessageBox.Show("Do you want overwrite new IV ?", "", MessageBoxButtons.YesNo,
+                                    MessageBoxIcon.Warning) == DialogResult.Yes)
+                            {
+                                Core.Binary.SaveAsBinary(Path.Combine(folderPath, $"IV_{HardwareInfoGetter.GetUUID()}.iv"), Binary.IV);
+                            }
+                        }
+                    }
+                },
+                ProgressChanged = args => {
+                    // it will display "I have found the user id" in this example
+                    SetWorkingMessage($"[{args.ProgressPercentage}/{checkedEntities.Count}] {args.UserState}");
+                },
+            });
+        }
 
         private void GetSecurityRole()
         {
@@ -384,7 +454,6 @@ namespace CrmDataBackupNRestore
                 Message = "Getting Entities",
                 Work = (worker, args) =>
                 {
-
                     args.Result = (RetrieveAllEntitiesResponse)Service.Execute(new RetrieveAllEntitiesRequest()
                     {
                         EntityFilters = EntityFilters.Entity
@@ -399,12 +468,18 @@ namespace CrmDataBackupNRestore
 
                     if (args.Result is RetrieveAllEntitiesResponse result)
                     {
-                        foreach (var entity in result.EntityMetadata.Where(x => x.CanCreateAttributes.Value && x.CanCreateCharts.Value && x.CanCreateForms.Value && x.CanCreateViews.Value))
+                        foreach (var entity in result.EntityMetadata.Where(x =>
+                            x.CanCreateAttributes.Value && x.CanCreateCharts.Value && x.CanCreateForms.Value &&
+                            x.CanCreateViews.Value))
                         {
-                            lv_entities.Items.Add(new ListViewItem(new String[] { entity.LogicalName, entity.DisplayName.UserLocalizedLabel?.Label, entity.MetadataId.ToString(), }));
+                            lv_entities.Items.Add(new ListViewItem(new String[]
+                            {
+                                entity.LogicalName, entity.DisplayName.UserLocalizedLabel?.Label,
+                                entity.MetadataId.ToString(),
+                            }));
                         }
                     }
-                }
+                },
             });
         }
 
@@ -465,10 +540,12 @@ namespace CrmDataBackupNRestore
 
         private IEnumerable<EntityWrapper> GetEntityRecords(string entityLogicalName, IEnumerable<string> selectedAttributes)
         {
-            //Need Fix : Attributes (overridencreatedon -> createdon)
+            //Attributes (overridencreatedon -> createdon)
+            var arr = selectedAttributes.Select(x => !x.Equals("overridencreatedon") ? x : "createdon").ToArray();
+
             var qe = new QueryExpression(entityLogicalName)
             {
-                ColumnSet = new ColumnSet(selectedAttributes.ToArray()),
+                ColumnSet = new ColumnSet(arr),
                 PageInfo = new PagingInfo()
                 {
                     Count = 5000,

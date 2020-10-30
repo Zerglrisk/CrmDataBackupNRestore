@@ -112,6 +112,7 @@
     <Compile Include="Definition\Serialize\OptionSetValueCollectionWrapper.cs" />
     <Compile Include="Definition\Serialize\OptionSetValueWrapper.cs" />
     <Compile Include="Excel.cs" />
+    <Compile Include="Extension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
