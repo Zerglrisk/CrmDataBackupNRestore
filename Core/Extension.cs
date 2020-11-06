@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,6 +20,11 @@ namespace Core
             dict.Remove(from);
             dict[to] = value;
             return true;
+        }
+        public static bool EOF(this BinaryReader binaryReader)
+        {
+            var bs = binaryReader.BaseStream;
+            return (bs.Position == bs.Length);
         }
     }
 }

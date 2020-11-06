@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -40,11 +41,11 @@ namespace Core
 
             return obj;
         }
-        public static void SaveAsBinary<TObject>(string fullpath, TObject data, int EncryptCount = 0)
+        public static void SaveAsBinary<TObject>(string fullpath, TObject data, int EncryptCount = 0, FileMode fileMode = FileMode.Create)
         {
             try
             {
-                using (var binaryWriter = new BinaryWriter(File.Open(fullpath, FileMode.Create)))
+                using (var binaryWriter = new BinaryWriter(File.Open(fullpath, fileMode)))
                 {
                     var bytes = Serialize(data);
                     for (var i = 0; i < EncryptCount; i++)
@@ -52,6 +53,38 @@ namespace Core
                         bytes = BlowFish.Encrypt_CBC(bytes);
                     }
                     binaryWriter.Write(bytes);
+                    binaryWriter.Close();
+                }
+            }
+            catch (IOException)
+            {
+                throw;
+            }
+        }
+
+        public static void SaveAsBinaryEx<T>(string fullpath, List<T> data, int EncryptCount = 0)
+        {
+            try
+            {
+                using (var binaryWriter = new BinaryWriter(File.Open(fullpath, FileMode.Append)))
+                {
+                    var dataSize = 5000;
+
+                    for (var i = 0; i <= data.Count; i+= dataSize)
+                    {
+                        var bytes = (Serialize(data.GetRange(i, Math.Min(dataSize, data.Count - i))));
+                        var bufferSize = bytes.Length;
+
+                        //4Byte
+                        binaryWriter.Write(bufferSize);
+
+                        for (var j = 0; j < EncryptCount; j++)
+                        {
+                            bytes = BlowFish.Encrypt_CBC(bytes);
+                        }
+
+                        binaryWriter.Write(bytes);
+                    }
                     binaryWriter.Close();
                 }
             }
@@ -75,6 +108,59 @@ namespace Core
                     }
 
                     ret = Deserialize<TObject>(bytes);
+                    binaryReader.Close();
+                }
+
+                return ret;
+            }
+            catch (IOException)
+            {
+                throw;
+            }
+            catch (OutOfMemoryException)
+            {
+                //binaryReader.ReadBytes(int.MaxValue); will Error on 32-bit system.
+                //https://stackoverflow.com/a/8613300
+                throw;
+            }
+            catch (System.Runtime.Serialization.SerializationException)
+            {
+                //
+                throw;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public static List<T> LoadAsBinaryEx<T>(string fullpath, int DecryptCount = 0)
+        {
+            try
+            {
+                List<T> ret = new List<T>();
+                
+
+                using (var binaryReader = new BinaryReader(File.Open(fullpath, FileMode.Open)))
+                {
+                    //var bufferSize = LoadAsBinary<int>(Path.Combine(Path.GetDirectoryName(fullpath) ?? throw new InvalidOperationException(), Path.GetFileNameWithoutExtension(fullpath) + ".didx"), 2);
+                    //var bytes = binaryReader.ReadBytes(int.MaxValue);
+
+                    while (!binaryReader.EOF())
+                    {
+                        var bufferSize = BitConverter.ToInt32(binaryReader.ReadBytes(4),0);
+                        
+                        var bytes = binaryReader.ReadBytes(bufferSize);
+
+
+                        for (var i = 0; i < DecryptCount; i++)
+                        {
+                            bytes = BlowFish.Decrypt_CBC(bytes);
+                        }
+
+                        var data = Deserialize<List<T>>(bytes);
+                        ret.AddRange(data);
+                    }
+
                     binaryReader.Close();
                 }
 

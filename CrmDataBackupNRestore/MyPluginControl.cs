@@ -323,7 +323,7 @@ namespace CrmDataBackupNRestore
                 {
                     var cnt = 0;
 
-                    var records = Core.Binary.LoadAsBinary<IEnumerable<EntityWrapper>>(fileName, 2).ToArray();
+                    var records = Core.Binary.LoadAsBinaryEx<EntityWrapper>(fileName, 2).ToArray();
 
                     //worker.ReportProgress(cnt, $"[{entity.Value}] Retrieving Records");
                     //try
@@ -336,7 +336,26 @@ namespace CrmDataBackupNRestore
                     //    //Decript Failed
                     //    throw new Exception("Please Load Correct IV First");
                     //}
-                        
+
+                    //foreach (var entity in ec.Entities)
+                    //{
+                    //    if (entity.Contains("statuscode"))
+                    //    {
+                    //        //if have statuscode, statecode just followed
+                    //        var statusCode = ((OptionSetValue)entity["statuscode"]);
+                    //        var stateCode = ((OptionSetValue) entity["statecode"]);
+                    //        entity.Attributes.Remove("statuscode");
+                    //        entity.Attributes.Remove("statecode");
+                    //        var id = Service.Create(entity);
+                    //        SetStatusCode(new EntityReference(entity.LogicalName, id), statusCode, statusCode);
+                    //    }
+                    //    else
+                    //    {
+                    //        Service.Create(entity);
+                    //    }
+                    //}
+
+
                     args.Result = "";
                 },
                 PostWorkCallBack = (args) =>
@@ -363,7 +382,7 @@ namespace CrmDataBackupNRestore
                     foreach (var entity in checkedEntities)
                     {
                         //get attributes
-                        if (checkedAttributes[entity.Key] != null)
+                        if (checkedAttributes.ContainsKey(entity.Key))
                         {
                             ++cnt;
                             //var selectedAttributes = (from ListViewItem item in lv_attributes.Items select item.SubItems[lv_attributes.Columns["ch_attr_logicalName"].Index].Text);
@@ -373,13 +392,48 @@ namespace CrmDataBackupNRestore
                             
                             worker.ReportProgress(cnt, $"[{entity.Value}] Retrieving Records");
 
-                            //var records = GetEntityRecords(selectedEntityLogicalName, selectedAttributes);
-                            var records = GetEntityRecords(entity.Value, selectedAttributes);
+                            //var records = GetEntityRecords(entity.Value, selectedAttributes);
+                            var recordsCnt = 0;
+                            #region GetEntityRecords
+                            //Attributes (overriddencreatedon -> createdon)
+                            var arr = selectedAttributes.Select(x => !x.Equals("overriddencreatedon") ? x : "createdon").ToList();
 
-                            worker.ReportProgress(cnt, $"[{entity.Value}] Total {records.Count()} Records Saving");
+                            //Attributes (if have statuscode, must follow statecode too)
+                            if (arr.Contains("statuscode"))//.Any(x => x.Equals("statuscode")))
+                            {
+                                arr.Add("statecode");
+                            }
+
+
+                            var qe = new QueryExpression(entity.Value)
+                            {
+                                ColumnSet = new ColumnSet(arr.ToArray()),
+                                PageInfo = new PagingInfo()
+                                {
+                                    Count = 5000,
+                                    PageNumber = 1,
+                                },
+                            };
+                            var ec = Service.RetrieveMultiple(qe);
+
+                            var entities = new List<EntityWrapper>(ec.Entities.Select(a => new EntityWrapper() { Id = a.Id, Attributes = a.Attributes.ToDictionary(x => x.Key, x => x.Value), LogicalName = a.LogicalName }));
+                            recordsCnt = ec.Entities.Count;
+                            worker.ReportProgress(cnt, $"[{entity.Value}] {recordsCnt} Records Retrieving");
+                            while (ec.MoreRecords)
+                            {
+                                qe.PageInfo.PageNumber += 1;
+                                qe.PageInfo.PagingCookie = ec.PagingCookie;
+                                ec = Service.RetrieveMultiple(qe);
+
+                                entities.AddRange(ec.Entities.Select(a => new EntityWrapper() { Id = a.Id, Attributes = a.Attributes.ToDictionary(x => x.Key, x => x.Value), LogicalName = a.LogicalName }));
+                                recordsCnt += ec.Entities.Count;
+                                worker.ReportProgress(cnt, $"[{entity.Value}] {recordsCnt} Records Saving");
+                            } 
+                            #endregion
+
                             //Core.Binary.SaveAsBinary(Path.Combine(folderPath, $"{selectedEntityLogicalName}_{DateTime.Now:yyyy-MM-dd_HHmmss}"), records, 2);
-                            Core.Binary.SaveAsBinary(
-                                Path.Combine(folderPath, $"{entity.Value}_{DateTime.Now:yyyy-MM-dd_HHmmss}.cdbr"), records, 2);
+                            Core.Binary.SaveAsBinaryEx(
+                                Path.Combine(folderPath, $"{entity.Value}_{DateTime.Now:yyyy-MM-dd_HHmmss}_{recordsCnt}.cdbr"), entities, 2);
                         }
                     }
 
@@ -464,6 +518,7 @@ namespace CrmDataBackupNRestore
                     if (args.Error != null)
                     {
                         MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
                     }
 
                     if (args.Result is RetrieveAllEntitiesResponse result)
@@ -540,12 +595,19 @@ namespace CrmDataBackupNRestore
 
         private IEnumerable<EntityWrapper> GetEntityRecords(string entityLogicalName, IEnumerable<string> selectedAttributes)
         {
-            //Attributes (overridencreatedon -> createdon)
-            var arr = selectedAttributes.Select(x => !x.Equals("overridencreatedon") ? x : "createdon").ToArray();
+            //Attributes (overriddencreatedon -> createdon)
+            var arr = selectedAttributes.Select(x => !x.Equals("overriddencreatedon") ? x : "createdon").ToList();
+
+            //Attributes (if have statuscode, must follow statecode too)
+            if (arr.Contains("statuscode"))//.Any(x => x.Equals("statuscode")))
+            {
+                arr.Add("statecode");
+            }
+            
 
             var qe = new QueryExpression(entityLogicalName)
             {
-                ColumnSet = new ColumnSet(arr),
+                ColumnSet = new ColumnSet(arr.ToArray()),
                 PageInfo = new PagingInfo()
                 {
                     Count = 5000,
@@ -608,6 +670,17 @@ namespace CrmDataBackupNRestore
                     return string.Empty;
                 }
             }
+        }
+
+        private void SetStatusCode(EntityReference target, OptionSetValue stateCode, OptionSetValue statusCode)
+        {
+            var setStateRequest = new SetStateRequest
+            {
+                EntityMoniker = target,
+                State = stateCode,
+                Status =statusCode
+            };
+            var response = (SetStateResponse)Service.Execute(setStateRequest);
         }
         #endregion
     }

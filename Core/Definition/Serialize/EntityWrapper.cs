@@ -43,11 +43,11 @@ namespace Core.Definition
         {
             var ac = new AttributeCollection();
 
-            // Need Fix : Attributes (createdon -> overridencreatedon) If OnCreate
+            // Need Fix : Attributes (createdon -> overriddencreatedon) If OnCreate
             if (this.Attributes.ContainsKey("createdon"))
             {
                 //if OnCreate
-                this.Attributes.RenameKey("createdon", "overridencreatedon");
+                this.Attributes.RenameKey("createdon", "overriddencreatedon");
             }
 
             foreach (var attr in this.Attributes)
