@@ -73,16 +73,15 @@ namespace Core
                     for (var i = 0; i <= data.Count; i+= dataSize)
                     {
                         var bytes = (Serialize(data.GetRange(i, Math.Min(dataSize, data.Count - i))));
-                        var bufferSize = bytes.Length;
-
-                        //4Byte
-                        binaryWriter.Write(bufferSize);
-
+                        
                         for (var j = 0; j < EncryptCount; j++)
                         {
                             bytes = BlowFish.Encrypt_CBC(bytes);
                         }
+                        var bufferSize = bytes.Length;
 
+                        //4Byte
+                        binaryWriter.Write(bufferSize);
                         binaryWriter.Write(bytes);
                     }
                     binaryWriter.Close();
@@ -147,7 +146,7 @@ namespace Core
 
                     while (!binaryReader.EOF())
                     {
-                        var bufferSize = BitConverter.ToInt32(binaryReader.ReadBytes(4),0);
+                        var bufferSize = binaryReader.ReadInt32();
                         
                         var bytes = binaryReader.ReadBytes(bufferSize);
 

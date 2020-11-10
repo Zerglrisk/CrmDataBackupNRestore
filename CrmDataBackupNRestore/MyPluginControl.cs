@@ -32,7 +32,7 @@ namespace CrmDataBackupNRestore
     public partial class MyPluginControl : PluginControlBase
     {
         #region Private Variables
-        
+
         private Settings mySettings;
         private string selectedEntityLogicalName;
         private bool isIVLoaded;
@@ -112,7 +112,7 @@ namespace CrmDataBackupNRestore
             //파일 확장자 정하기
             var fileName = GetFilePath("cdbr");
             if (string.IsNullOrWhiteSpace(fileName)) return;
-          
+
             ExecuteMethod(ImportData, fileName);
         }
 
@@ -337,23 +337,23 @@ namespace CrmDataBackupNRestore
                     //    throw new Exception("Please Load Correct IV First");
                     //}
 
-                    //foreach (var entity in ec.Entities)
-                    //{
-                    //    if (entity.Contains("statuscode"))
-                    //    {
-                    //        //if have statuscode, statecode just followed
-                    //        var statusCode = ((OptionSetValue)entity["statuscode"]);
-                    //        var stateCode = ((OptionSetValue) entity["statecode"]);
-                    //        entity.Attributes.Remove("statuscode");
-                    //        entity.Attributes.Remove("statecode");
-                    //        var id = Service.Create(entity);
-                    //        SetStatusCode(new EntityReference(entity.LogicalName, id), statusCode, statusCode);
-                    //    }
-                    //    else
-                    //    {
-                    //        Service.Create(entity);
-                    //    }
-                    //}
+                    foreach (var entity in ec.Entities)
+                    {
+                        if (entity.Contains("statuscode"))
+                        {
+                            //if have statuscode, statecode just followed
+                            var statusCode = ((OptionSetValue)entity["statuscode"]);
+                            var stateCode = ((OptionSetValue)entity["statecode"]);
+                            entity.Attributes.Remove("statuscode");
+                            entity.Attributes.Remove("statecode");
+                            var id = Service.Create(entity);
+                            SetStatusCode(new EntityReference(entity.LogicalName, id), statusCode, statusCode);
+                        }
+                        else
+                        {
+                            Service.Create(entity);
+                        }
+                    }
 
 
                     args.Result = "";
@@ -365,7 +365,8 @@ namespace CrmDataBackupNRestore
                         MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 },
-                ProgressChanged = args => {
+                ProgressChanged = args =>
+                {
                     // it will display "I have found the user id" in this example
                     SetWorkingMessage($"[{args.ProgressPercentage}/{checkedEntities.Count}] {args.UserState}");
                 },
@@ -389,7 +390,7 @@ namespace CrmDataBackupNRestore
                             var selectedAttributes = checkedAttributes[entity.Key];
 
                             if (!selectedAttributes.Any()) continue;
-                            
+
                             worker.ReportProgress(cnt, $"[{entity.Value}] Retrieving Records");
 
                             //var records = GetEntityRecords(entity.Value, selectedAttributes);
@@ -428,7 +429,7 @@ namespace CrmDataBackupNRestore
                                 entities.AddRange(ec.Entities.Select(a => new EntityWrapper() { Id = a.Id, Attributes = a.Attributes.ToDictionary(x => x.Key, x => x.Value), LogicalName = a.LogicalName }));
                                 recordsCnt += ec.Entities.Count;
                                 worker.ReportProgress(cnt, $"[{entity.Value}] {recordsCnt} Records Saving");
-                            } 
+                            }
                             #endregion
 
                             //Core.Binary.SaveAsBinary(Path.Combine(folderPath, $"{selectedEntityLogicalName}_{DateTime.Now:yyyy-MM-dd_HHmmss}"), records, 2);
@@ -464,7 +465,8 @@ namespace CrmDataBackupNRestore
                         }
                     }
                 },
-                ProgressChanged = args => {
+                ProgressChanged = args =>
+                {
                     // it will display "I have found the user id" in this example
                     SetWorkingMessage($"[{args.ProgressPercentage}/{checkedEntities.Count}] {args.UserState}");
                 },
@@ -603,7 +605,7 @@ namespace CrmDataBackupNRestore
             {
                 arr.Add("statecode");
             }
-            
+
 
             var qe = new QueryExpression(entityLogicalName)
             {
@@ -678,7 +680,7 @@ namespace CrmDataBackupNRestore
             {
                 EntityMoniker = target,
                 State = stateCode,
-                Status =statusCode
+                Status = statusCode
             };
             var response = (SetStateResponse)Service.Execute(setStateRequest);
         }
