@@ -16,5 +16,6 @@ namespace CrmDataBackupNRestore
     {
         public string LastUsedOrganizationWebappUrl { get; set; }
         public int? SelectedTabControl { get; set; }
+        public bool? isUseCrypto { get; set; }
     }
 }

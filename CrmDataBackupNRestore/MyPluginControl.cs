@@ -45,6 +45,9 @@ namespace CrmDataBackupNRestore
         /// </summary>
         private bool isAttributeLoad;
 
+        private int lvattributesColumns;
+        private int lventitiesColumns;
+
         #endregion
 
         public MyPluginControl()
@@ -146,11 +149,16 @@ namespace CrmDataBackupNRestore
                 tabControl1_SelectedIndexChanged(null, null);
             }
 
+            //default true
+            chk_C_CryptoUsage.Checked = !mySettings.isUseCrypto.HasValue || mySettings.isUseCrypto.Value;
+
             checkedEntities = new Dictionary<string, string>();
             checkedAttributes = new Dictionary<string, List<string>>();
             txt_C_IV.Text = Binary.ByteToHex(Binary.GenerateIV);
             isIVLoaded = false;
             isAttributeLoad = false;
+            lvattributesColumns = -1;
+            lventitiesColumns = -1;
         }
 
 
@@ -339,15 +347,29 @@ namespace CrmDataBackupNRestore
 
                     foreach (var entity in ec.Entities)
                     {
-                        if (entity.Contains("statuscode"))
+                        if (entity.Contains("statuscode")) 
                         {
                             //if have statuscode, statecode just followed
                             var statusCode = ((OptionSetValue)entity["statuscode"]);
                             var stateCode = ((OptionSetValue)entity["statecode"]);
                             entity.Attributes.Remove("statuscode");
                             entity.Attributes.Remove("statecode");
-                            var id = Service.Create(entity);
-                            SetStatusCode(new EntityReference(entity.LogicalName, id), statusCode, statusCode);
+                            try
+                            {
+                                var id = Service.Create(entity);
+                                SetStatusCode(new EntityReference(entity.LogicalName, id), statusCode, statusCode);
+                            }
+                            catch (System.ServiceModel.FaultException ex)
+                            {
+                                if (ex.HResult == -2146233087)
+                                {
+                                    //duplicate
+                                }
+                                else
+                                {
+                                    throw;
+                                }
+                            }
                         }
                         else
                         {
@@ -430,7 +452,7 @@ namespace CrmDataBackupNRestore
                                 recordsCnt += ec.Entities.Count;
                                 worker.ReportProgress(cnt, $"[{entity.Value}] {recordsCnt} Records Saving");
                             }
-                            #endregion
+                            #endregion                  
 
                             //Core.Binary.SaveAsBinary(Path.Combine(folderPath, $"{selectedEntityLogicalName}_{DateTime.Now:yyyy-MM-dd_HHmmss}"), records, 2);
                             Core.Binary.SaveAsBinaryEx(
@@ -483,7 +505,7 @@ namespace CrmDataBackupNRestore
                     args.Result = Service.RetrieveMultiple(new QueryExpression("role")
                     {
 
-                    });
+                    }); 
                 },
                 PostWorkCallBack = (args) =>
                 {
@@ -568,7 +590,7 @@ namespace CrmDataBackupNRestore
 
                         foreach (var attr in result.EntityMetadata.Attributes.Where(
                             x => (x.IsValidForCreate != null && x.IsValidForCreate.Value)
-                               && (x.DisplayName.UserLocalizedLabel != null && !string.IsNullOrWhiteSpace(x.DisplayName.UserLocalizedLabel.Label))
+                               && (!string.IsNullOrWhiteSpace(x.DisplayName.UserLocalizedLabel?.Label))
                                && (x.IsValidForRead != null && x.IsValidForRead.Value)))
                         {
                             lv_attributes.Items.Add(new ListViewItem(new String[] { attr.LogicalName, attr.DisplayName.UserLocalizedLabel?.Label, attr.AttributeTypeName.Value }));
@@ -685,5 +707,39 @@ namespace CrmDataBackupNRestore
             var response = (SetStateResponse)Service.Execute(setStateRequest);
         }
         #endregion
+
+        private void lv_attributes_ColumnClick(object sender, ColumnClickEventArgs e)
+        {
+            if (e.Column != lvattributesColumns)
+            {
+                lvattributesColumns = e.Column;
+                this.lv_attributes.Sorting = SortOrder.Ascending;
+            }
+            else
+            {
+                this.lv_attributes.Sorting = this.lv_attributes.Sorting == SortOrder.Ascending ? SortOrder.Descending : SortOrder.Ascending;
+            }
+
+            this.lv_attributes.Sort();
+
+            this.lv_attributes.ListViewItemSorter = new CustomListViewComparer(e.Column,this.lv_attributes.Sorting);
+        }
+
+        private void lv_entities_ColumnClick(object sender, ColumnClickEventArgs e)
+        {
+            if (e.Column != lventitiesColumns)
+            {
+                lventitiesColumns = e.Column;
+                this.lv_entities.Sorting = SortOrder.Ascending;
+            }
+            else
+            {
+                this.lv_entities.Sorting = this.lv_entities.Sorting == SortOrder.Ascending ? SortOrder.Descending : SortOrder.Ascending;
+            }
+
+            this.lv_entities.Sort();
+
+            this.lv_entities.ListViewItemSorter = new CustomListViewComparer(e.Column, this.lv_entities.Sorting);
+        }
     }
 }

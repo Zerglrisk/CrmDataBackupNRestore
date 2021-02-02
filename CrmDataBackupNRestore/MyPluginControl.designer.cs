@@ -186,6 +186,7 @@
             this.lv_attributes.TabIndex = 3;
             this.lv_attributes.UseCompatibleStateImageBehavior = false;
             this.lv_attributes.View = System.Windows.Forms.View.Details;
+            this.lv_attributes.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.lv_attributes_ColumnClick);
             this.lv_attributes.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.lv_attributes_ItemChecked);
             // 
             // label4
@@ -223,6 +224,7 @@
             this.lv_entities.TabIndex = 4;
             this.lv_entities.UseCompatibleStateImageBehavior = false;
             this.lv_entities.View = System.Windows.Forms.View.Details;
+            this.lv_entities.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.lv_entities_ColumnClick);
             this.lv_entities.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.lv_entities_ItemChecked);
             this.lv_entities.SelectedIndexChanged += new System.EventHandler(this.lv_entities_SelectedIndexChanged);
             // 
