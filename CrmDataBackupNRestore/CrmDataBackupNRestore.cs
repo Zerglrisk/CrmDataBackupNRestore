@@ -29,7 +29,7 @@ namespace CrmDataBackupNRestore
     /// https://www.xrmtoolbox.com/documentation/for-developers/multipleconnectionsplugincontrolbase-base-class/
     /// https://www.xrmtoolbox.com/documentation/for-developers/
     /// </summary>
-    public partial class MyPluginControl : PluginControlBase
+    public partial class CrmDataBackupNRestore : PluginControlBase
     {
         #region Private Variables
 
@@ -50,7 +50,7 @@ namespace CrmDataBackupNRestore
 
         #endregion
 
-        public MyPluginControl()
+        public CrmDataBackupNRestore()
         {
             InitializeComponent();
         }
@@ -108,7 +108,13 @@ namespace CrmDataBackupNRestore
             ExecuteMethod(ExportData, folderPath);
         }
 
-        private void tsb_Import_Click(object sender, EventArgs e)
+        private void itsmi_imports_Click(object sender, EventArgs e)
+        {
+            //var folderPath = GetFolderPath();
+            MessageBox.Show("기능 준비중");
+        }
+
+        private void itsmi_import_Click(object sender, EventArgs e)
         {
             //Preview 필요
             //Need Fix : 레코드가 5000개 이상일 경우 어떻게 읽을 것인가를 해결방안 찾기
@@ -118,7 +124,6 @@ namespace CrmDataBackupNRestore
 
             ExecuteMethod(ImportData, fileName);
         }
-
         #endregion
 
         #region Events
@@ -199,6 +204,7 @@ namespace CrmDataBackupNRestore
                 selectedEntityLogicalName = string.Empty;
 
                 #endregion
+
                 ExecuteMethod(GetEntities);
             }
             else if (tabControl1.SelectedTab == tp_privileges)
@@ -246,7 +252,7 @@ namespace CrmDataBackupNRestore
                 if (!e.Item.Selected)
                 {
                     //If Not selected, set not select other item, select current item
-                    foreach (ListViewItem item in lv_entities.SelectedItems)
+                    foreach (ListViewItem item in lv_entities.SelectedItems.Cast<ListViewItem>().Where(x=> x.Selected == true))
                     {
                         item.Selected = false;
                     }
@@ -312,6 +318,50 @@ namespace CrmDataBackupNRestore
                 if (checkedAttributes[key].Contains(logicalName))
                     checkedAttributes[key].Remove(logicalName);
             }
+        }
+
+        /// <summary>
+        /// Attribute Column Order
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void lv_attributes_ColumnClick(object sender, ColumnClickEventArgs e)
+        {
+            if (e.Column != lvattributesColumns)
+            {
+                lvattributesColumns = e.Column;
+                this.lv_attributes.Sorting = SortOrder.Ascending;
+            }
+            else
+            {
+                this.lv_attributes.Sorting = this.lv_attributes.Sorting == SortOrder.Ascending ? SortOrder.Descending : SortOrder.Ascending;
+            }
+
+            this.lv_attributes.Sort();
+
+            this.lv_attributes.ListViewItemSorter = new CustomListViewComparer(e.Column, this.lv_attributes.Sorting);
+        }
+
+        /// <summary>
+        /// Entity Column Order
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void lv_entities_ColumnClick(object sender, ColumnClickEventArgs e)
+        {
+            if (e.Column != lventitiesColumns)
+            {
+                lventitiesColumns = e.Column;
+                this.lv_entities.Sorting = SortOrder.Ascending;
+            }
+            else
+            {
+                this.lv_entities.Sorting = this.lv_entities.Sorting == SortOrder.Ascending ? SortOrder.Descending : SortOrder.Ascending;
+            }
+
+            this.lv_entities.Sort();
+
+            this.lv_entities.ListViewItemSorter = new CustomListViewComparer(e.Column, this.lv_entities.Sorting);
         }
 
         #endregion
@@ -421,6 +471,7 @@ namespace CrmDataBackupNRestore
                             //Attributes (overriddencreatedon -> createdon)
                             var arr = selectedAttributes.Select(x => !x.Equals("overriddencreatedon") ? x : "createdon").ToList();
 
+                            var test = Core.Definition.Serialize.EntityMetadataWrapper.GetEntityMetadataWrapper(Service, entity.Value);
                             //Attributes (if have statuscode, must follow statecode too)
                             if (arr.Contains("statuscode"))//.Any(x => x.Equals("statuscode")))
                             {
@@ -707,39 +758,5 @@ namespace CrmDataBackupNRestore
             var response = (SetStateResponse)Service.Execute(setStateRequest);
         }
         #endregion
-
-        private void lv_attributes_ColumnClick(object sender, ColumnClickEventArgs e)
-        {
-            if (e.Column != lvattributesColumns)
-            {
-                lvattributesColumns = e.Column;
-                this.lv_attributes.Sorting = SortOrder.Ascending;
-            }
-            else
-            {
-                this.lv_attributes.Sorting = this.lv_attributes.Sorting == SortOrder.Ascending ? SortOrder.Descending : SortOrder.Ascending;
-            }
-
-            this.lv_attributes.Sort();
-
-            this.lv_attributes.ListViewItemSorter = new CustomListViewComparer(e.Column,this.lv_attributes.Sorting);
-        }
-
-        private void lv_entities_ColumnClick(object sender, ColumnClickEventArgs e)
-        {
-            if (e.Column != lventitiesColumns)
-            {
-                lventitiesColumns = e.Column;
-                this.lv_entities.Sorting = SortOrder.Ascending;
-            }
-            else
-            {
-                this.lv_entities.Sorting = this.lv_entities.Sorting == SortOrder.Ascending ? SortOrder.Descending : SortOrder.Ascending;
-            }
-
-            this.lv_entities.Sort();
-
-            this.lv_entities.ListViewItemSorter = new CustomListViewComparer(e.Column, this.lv_entities.Sorting);
-        }
     }
 }

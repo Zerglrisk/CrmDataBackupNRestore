@@ -12,7 +12,7 @@ namespace CrmDataBackupNRestore
     // Do not forget to update version number and author (company attribute) in AssemblyInfo.cs class
     // To generate Base64 string for Images below, you can use https://www.base64-image.de/
     [Export(typeof(IXrmToolBoxPlugin)),
-        ExportMetadata("Name", "My First Plugin"),
+        ExportMetadata("Name", "Crm Data Backup And Restore"),
         ExportMetadata("Description", "This is a description for my first plugin"),
         // Please specify the base64 content of a 32x32 pixels image
         ExportMetadata("SmallImageBase64", null),
@@ -25,7 +25,7 @@ namespace CrmDataBackupNRestore
     {
         public override IXrmToolBoxPluginControl GetControl()
         {
-            return new MyPluginControl();
+            return new CrmDataBackupNRestore();
         }
 
         /// <summary>

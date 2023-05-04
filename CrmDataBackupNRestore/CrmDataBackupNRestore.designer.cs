@@ -1,6 +1,6 @@
 ﻿namespace CrmDataBackupNRestore
 {
-    partial class MyPluginControl
+    partial class CrmDataBackupNRestore
     {
         /// <summary> 
         /// Variable nécessaire au concepteur.
@@ -31,7 +31,6 @@
             this.toolStripMenu = new System.Windows.Forms.ToolStrip();
             this.tsb_Close = new System.Windows.Forms.ToolStripButton();
             this.tsb_Export = new System.Windows.Forms.ToolStripButton();
-            this.tsb_Import = new System.Windows.Forms.ToolStripButton();
             this.tsbClose = new System.Windows.Forms.ToolStripButton();
             this.tssSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.tsbSample = new System.Windows.Forms.ToolStripButton();
@@ -60,6 +59,9 @@
             this.label2 = new System.Windows.Forms.Label();
             this.chk_C_CryptoUsage = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.tssb_Import = new System.Windows.Forms.ToolStripSplitButton();
+            this.itsmi_import = new System.Windows.Forms.ToolStripMenuItem();
+            this.itsmi_imports = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenu.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tp_general.SuspendLayout();
@@ -78,7 +80,7 @@
             this.toolStripMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsb_Close,
             this.tsb_Export,
-            this.tsb_Import});
+            this.tssb_Import});
             this.toolStripMenu.Location = new System.Drawing.Point(0, 0);
             this.toolStripMenu.Name = "toolStripMenu";
             this.toolStripMenu.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
@@ -101,14 +103,6 @@
             this.tsb_Export.Size = new System.Drawing.Size(45, 22);
             this.tsb_Export.Text = "Export";
             this.tsb_Export.Click += new System.EventHandler(this.tsb_Export_Click);
-            // 
-            // tsb_Import
-            // 
-            this.tsb_Import.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.tsb_Import.Name = "tsb_Import";
-            this.tsb_Import.Size = new System.Drawing.Size(47, 22);
-            this.tsb_Import.Text = "Import";
-            this.tsb_Import.Click += new System.EventHandler(this.tsb_Import_Click);
             // 
             // tsbClose
             // 
@@ -167,10 +161,10 @@
             this.pn_general_attribute.Controls.Add(this.lv_attributes);
             this.pn_general_attribute.Controls.Add(this.label4);
             this.pn_general_attribute.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pn_general_attribute.Location = new System.Drawing.Point(253, 3);
+            this.pn_general_attribute.Location = new System.Drawing.Point(303, 3);
             this.pn_general_attribute.Name = "pn_general_attribute";
             this.pn_general_attribute.Padding = new System.Windows.Forms.Padding(10);
-            this.pn_general_attribute.Size = new System.Drawing.Size(656, 363);
+            this.pn_general_attribute.Size = new System.Drawing.Size(606, 363);
             this.pn_general_attribute.TabIndex = 6;
             // 
             // lv_attributes
@@ -182,7 +176,7 @@
             this.lv_attributes.HideSelection = false;
             this.lv_attributes.Location = new System.Drawing.Point(10, 33);
             this.lv_attributes.Name = "lv_attributes";
-            this.lv_attributes.Size = new System.Drawing.Size(636, 320);
+            this.lv_attributes.Size = new System.Drawing.Size(586, 320);
             this.lv_attributes.TabIndex = 3;
             this.lv_attributes.UseCompatibleStateImageBehavior = false;
             this.lv_attributes.View = System.Windows.Forms.View.Details;
@@ -194,7 +188,7 @@
             this.label4.Dock = System.Windows.Forms.DockStyle.Top;
             this.label4.Location = new System.Drawing.Point(10, 10);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(636, 23);
+            this.label4.Size = new System.Drawing.Size(586, 23);
             this.label4.TabIndex = 5;
             this.label4.Text = "Attributes";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -207,7 +201,7 @@
             this.pn_general_entity.Location = new System.Drawing.Point(3, 3);
             this.pn_general_entity.Name = "pn_general_entity";
             this.pn_general_entity.Padding = new System.Windows.Forms.Padding(10);
-            this.pn_general_entity.Size = new System.Drawing.Size(250, 363);
+            this.pn_general_entity.Size = new System.Drawing.Size(300, 363);
             this.pn_general_entity.TabIndex = 8;
             // 
             // lv_entities
@@ -220,7 +214,7 @@
             this.lv_entities.Location = new System.Drawing.Point(10, 33);
             this.lv_entities.MultiSelect = false;
             this.lv_entities.Name = "lv_entities";
-            this.lv_entities.Size = new System.Drawing.Size(230, 320);
+            this.lv_entities.Size = new System.Drawing.Size(280, 320);
             this.lv_entities.TabIndex = 4;
             this.lv_entities.UseCompatibleStateImageBehavior = false;
             this.lv_entities.View = System.Windows.Forms.View.Details;
@@ -233,7 +227,7 @@
             this.label3.Dock = System.Windows.Forms.DockStyle.Top;
             this.label3.Location = new System.Drawing.Point(10, 10);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(230, 23);
+            this.label3.Size = new System.Drawing.Size(280, 23);
             this.label3.TabIndex = 2;
             this.label3.Text = "Entity";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -350,6 +344,7 @@
             this.label7.TabIndex = 7;
             this.label7.Text = "Preview 사용";
             this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.label7.Visible = false;
             // 
             // checkBox1
             // 
@@ -359,6 +354,7 @@
             this.checkBox1.Size = new System.Drawing.Size(15, 14);
             this.checkBox1.TabIndex = 6;
             this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.Visible = false;
             // 
             // cb_C_SaveType
             // 
@@ -408,14 +404,39 @@
             this.label1.Text = "IV";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // MyPluginControl
+            // tssb_Import
+            // 
+            this.tssb_Import.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tssb_Import.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.itsmi_import,
+            this.itsmi_imports});
+            this.tssb_Import.Name = "tssb_Import";
+            this.tssb_Import.Size = new System.Drawing.Size(59, 22);
+            this.tssb_Import.Text = "Import";
+            this.tssb_Import.Click += new System.EventHandler(this.itsmi_import_Click);
+            // 
+            // itsmi_import
+            // 
+            this.itsmi_import.Name = "itsmi_import";
+            this.itsmi_import.Size = new System.Drawing.Size(180, 22);
+            this.itsmi_import.Text = "Import";
+            this.itsmi_import.Click += new System.EventHandler(this.itsmi_import_Click);
+            // 
+            // itsmi_imports
+            // 
+            this.itsmi_imports.Name = "itsmi_imports";
+            this.itsmi_imports.Size = new System.Drawing.Size(180, 22);
+            this.itsmi_imports.Text = "Imports";
+            this.itsmi_imports.Click += new System.EventHandler(this.itsmi_imports_Click);
+            // 
+            // CrmDataBackupNRestore
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.toolStripMenu);
-            this.Name = "MyPluginControl";
+            this.Name = "CrmDataBackupNRestore";
             this.Size = new System.Drawing.Size(920, 520);
             this.OnCloseTool += new System.EventHandler(this.MyPluginControl_OnCloseTool);
             this.Load += new System.EventHandler(this.MyPluginControl_Load);
@@ -465,9 +486,11 @@
         private System.Windows.Forms.Panel pn_priv_privileges_2;
         private System.Windows.Forms.Panel pn_priv_privileges;
         private System.Windows.Forms.ToolStripButton tsb_Export;
-        private System.Windows.Forms.ToolStripButton tsb_Import;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.Button btn_LoadIV;
+        private System.Windows.Forms.ToolStripSplitButton tssb_Import;
+        private System.Windows.Forms.ToolStripMenuItem itsmi_import;
+        private System.Windows.Forms.ToolStripMenuItem itsmi_imports;
     }
 }
